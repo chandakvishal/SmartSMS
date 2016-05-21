@@ -1,86 +1,67 @@
 package com.example.vinay.sms;
 
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.Telephony;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-
-/**
- * Created by vinay on 06-05-2016.
- */
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
+        BackHandledFragment.BackHandlerInterface {
 
 
-
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
-{
-
-
-    private static MainActivity inst;
-    ArrayList<String> smsMessagesList = new ArrayList<String>();
+    private final String TAG = this.getClass().getSimpleName();
+    ArrayList<String> smsMessagesList = new ArrayList<>();
     ListView smsListView;
-    ArrayAdapter arrayAdapter;
-
-    public static MainActivity instance() {
-        return inst;
-    }
 
     @Override
     public void onStart() {
         super.onStart();
-        inst = this;
     }
+
+    //Contacts Data Items to extract
+    static final String[] CONTACT_ROWS = new String[] {
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tool_bar);
+        setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.main_fragment);
+        assert frameLayout != null;
+        frameLayout.getForeground().setAlpha(0);
+
+        CoordinatorLayout mLayout = (CoordinatorLayout) findViewById(R.id
+                .coordinatorLayout);
+
         smsListView = (ListView) findViewById(R.id.SMSList);
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, smsMessagesList);
-        smsListView.setAdapter(arrayAdapter);
-        smsListView.setOnItemClickListener(this);
-        Button b1 = (Button) findViewById(R.id.button);
-        b1.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Intent i = new Intent(MainActivity.this, SendMessage.class);
-                startActivity(i);
-            }
-        });
+//        getLoaderManager().initLoader(0, null, this);
 
-        refreshSmsInbox();
-    }
-
-    public void refreshSmsInbox() {
-        ContentResolver contentResolver = getContentResolver();
-        Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, null);
-        int indexBody = smsInboxCursor.getColumnIndex("body");
-        int indexAddress = smsInboxCursor.getColumnIndex("address");
-        if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
-        arrayAdapter.clear();
-        do {
-            String str = "SMS From: " + smsInboxCursor.getString(indexAddress) +
-                    "\n" + smsInboxCursor.getString(indexBody) + "\n";
-            arrayAdapter.add(str);
-        } while (smsInboxCursor.moveToNext());
-    }
-
-    public void updateList(final String smsMessage) {
-        arrayAdapter.insert(smsMessage, 0);
-        arrayAdapter.notifyDataSetChanged();
+        if (savedInstanceState == null)
+            changeFragment(new SmsDisplayFragment(), "smsDisplayFragment");
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
@@ -100,50 +81,55 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    //Intent intent = new Intent(Intent.ACTION_MAIN);
+    //intent.addCategory(Intent.CATEGORY_DEFAULT);
+    //intent.setType("vnd.android-dir/mms-sms");
+    //startActivity(intent);
 
-
-        //Intent intent = new Intent(Intent.ACTION_MAIN);
-        //intent.addCategory(Intent.CATEGORY_DEFAULT);
-        //intent.setType("vnd.android-dir/mms-sms");
-        //startActivity(intent);
-
-
-
+    public void changeFragment(Fragment targetFragment, String tag) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.animation2, R.anim.animation4)
+                .replace(R.id.main_fragment, targetFragment, tag)
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack(tag)
+                .commit();
     }
 
+    @Override
+    public void setSelectedFragment(BackHandledFragment selectedFragment) {
+    }
 
+//    @Override
+//    public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+//
+//        //Select Statement to select the contacts
+//        String select = "((" + ContactsContract.Contacts.DISPLAY_NAME + " NOT NULL) AND ("
+//                + ContactsContract.Contacts.DISPLAY_NAME + " != '' ) AND ("
+//                + ContactsContract.Contacts.STARRED + " == 1))";
+//
+//        String sortOrder = ContactsContract.Contacts._ID + " ASC";
+//        Log.d(TAG, "onCreateLoader1: " + select);
+//        Log.d(TAG, "onCreateLoader2: " + sortOrder);
+//        return new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, CONTACT_ROWS,
+//                select, null, sortOrder);
+//    }
+//
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+//        Log.d(TAG, "onLoadLoader1: " +cursor.getCount());
+//        if (cursor.moveToFirst()){
+//            do{
+//                String data = cursor.getString(cursor.getColumnIndex("data"));
+//                Log.d(TAG, "onLoadLoader2: " +data);
+//                Log.d(TAG, "onLoadFinishedLoader3: " + cursor.getColumnCount());
+//            }while(cursor.moveToNext());
+//        }
+//     }
+//
+//    @Override
+//    public void onLoaderReset(Loader<Cursor> loader) {
+//
+//    }
 
-/**
- * Created by vinay on 06-05-2016.
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

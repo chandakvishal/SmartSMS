@@ -6,17 +6,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class SendMessage extends Activity {
 
-    private static final int PICK_CONTACT =1 ;
+    private static final int PICK_CONTACT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +29,7 @@ public class SendMessage extends Activity {
 
     //code
     @Override
-    public void onActivityResult(int reqCode, int resultCode, Intent data){
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
         switch (reqCode) {
@@ -43,31 +38,28 @@ public class SendMessage extends Activity {
                 if (resultCode == Activity.RESULT_OK) {
 
                     Uri contactData = data.getData();
-                    Cursor c =  managedQuery(contactData, null, null, null, null);
+                    Cursor c = managedQuery(contactData, null, null, null, null);
                     if (c.moveToFirst()) {
 
 
-                        String id =c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+                        String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
 
-                        String hasPhone =c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+                        String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
                         if (hasPhone.equalsIgnoreCase("1")) {
                             Cursor phones = getContentResolver().query(
-                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
-                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = "+ id,
+                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id,
                                     null, null);
-                            phones.moveToFirst();
                             assert phones != null;
+                            phones.moveToFirst();
                             String cNumber = phones.getString(phones.getColumnIndex("data1"));
                             String name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                            System.out.println("number is:"+cNumber);
+                            System.out.println("number is:" + cNumber);
                             System.out.println("NAME" + name);
+
                             phones.close();
                             c.close();
                         }
-//                            String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-//                            System.out.print("name is"+name);
-
-
                     }
                 }
                 break;

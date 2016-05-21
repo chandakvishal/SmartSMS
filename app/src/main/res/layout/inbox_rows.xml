@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TableLayout
+        android:id="@+id/tableQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#8CFFFFFF">
+
+        <TableRow android:padding="10dp">
+
+            <TextView
+                android:id="@+id/messageBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:paddingLeft="20dp"
+                android:paddingTop="15dp"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableQuestion"
+        android:background="#66FFFFFF">
+
+        <TextView
+            android:id="@+id/timeStamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:minHeight="48dp"
+            android:paddingLeft="20dp"
+            android:textIsSelectable="true"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

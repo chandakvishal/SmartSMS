@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TableRow
+        android:id="@+id/tableQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#8CFFFFFF"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/userImageAnswer"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="userimage" />
+
+        <TextView
+            android:id="@+id/emailAnswer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:paddingLeft="20dp"
+            android:paddingTop="15dp"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </TableRow>
+
+</RelativeLayout>
