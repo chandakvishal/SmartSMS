@@ -1,4 +1,4 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Utilities;
 
 import android.view.View;
 

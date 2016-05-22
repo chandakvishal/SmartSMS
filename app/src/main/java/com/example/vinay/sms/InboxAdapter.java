@@ -1,5 +1,6 @@
 package com.example.vinay.sms;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
@@ -10,11 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,49 +23,34 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
 
     private String TAG = InboxAdapter.class.getSimpleName();
     private List<SMS> smsList;
-//    private Activity activity;
+    private Activity activity;
     private Context ctx;
-    private static final int VIEW_TYPE_FILLED = 0;
-    private static final int VIEW_TYPE_EMPTY = 1;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private List<SMS> SMSListToDelete = new ArrayList<>();
 
-    public InboxAdapter(List<SMS> smsList) {
+    public InboxAdapter(Activity activity, List<SMS> smsList) {
         this.smsList = smsList;
-//        ctx = activity.getApplicationContext();
+        ctx = activity.getApplicationContext();
+        this.activity = activity;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View itemView;
-        if (viewType == VIEW_TYPE_FILLED) {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.inbox_rows, parent, false);
-        } else {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.empty_layout, parent, false);
-        }
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.inbox_rows, parent, false);
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        int viewType = getItemViewType(position);
-        if (viewType == VIEW_TYPE_FILLED) {
-            Log.d("TAG", "onBindViewHolder: " + smsList.size());
-            holder.time.setText(smsList.get(position).date);
-            String message = String.valueOf(smsList.get(position).message);
-            holder.message.setText(message);
-//            final TypedArray imgs = ctx.getResources().obtainTypedArray(R.array.userArray);
-//            final Random rand = new Random();
-//            final int rndInt = rand.nextInt(imgs.length());
-//            final int resID = imgs.getResourceId(rndInt, 0);
-//
-//            holder.image.setImageResource(resID);
+        Log.d("TAG", "onBindViewHolder: " + smsList.size());
+        SimpleDateFormat ft = new SimpleDateFormat("E yyyy.MM.dd");
+        holder.time.setText(ft.format(Long.parseLong(smsList.get(position).date)));
+        String message = String.valueOf(smsList.get(position).message);
+        holder.message.setText(message);
 
-        }
     }
 
     @Override
@@ -72,26 +58,15 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
         return smsList.size();
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (smsList.size() == 0) {
-            return VIEW_TYPE_EMPTY;
-        } else {
-            return VIEW_TYPE_FILLED;
-        }
-    }
-
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         public TextView message, time;
-        public ImageView image;
         private FrameLayout frameLayout;
 
         public MyViewHolder(View view) {
             super(view);
             time = (TextView) view.findViewById(R.id.timeStamp);
-            image = (ImageView) view.findViewById(R.id.userImageSMS);
             message = (TextView) view.findViewById(R.id.messageBody);
-//            frameLayout = (FrameLayout) activity.findViewById(R.id.main_fragment);
+            frameLayout = (FrameLayout) activity.findViewById(R.id.main_fragment);
 
             view.setOnLongClickListener(this);
         }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SMS</string>
+    <string name="send_button">send_button</string>
 </resources>

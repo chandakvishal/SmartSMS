@@ -1,4 +1,4 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Utilities;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

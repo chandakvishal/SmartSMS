@@ -4,15 +4,24 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.example.vinay.sms.Utilities.BackHandledFragment;
+import com.example.vinay.sms.Utilities.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +36,46 @@ public class Inbox_Messages extends BackHandledFragment {
 
     private static SMS message;
 
-    @SuppressWarnings("ConstantConditions")
+    private Snackbar snackbar;
+
+    @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.inbox_holder, container, false);
 
+        final String destination = message.getSenderAddress();
+
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_inbox);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Answers");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(destination);
 
         setHasOptionsMenu(true);
 
-        mAdapter = new InboxAdapter(messagesList);
+        //Snackbar Settings Initially
+        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) parentView.findViewById(R.id
+                .coordinatorLayout);
+        snackbar = Snackbar.make(coordinatorLayout, "Successfully Sent the message", Snackbar.LENGTH_LONG);
+        final View snackBarView = snackbar.getView();
+        snackBarView.setBackgroundColor(getResources().getColor(R.color.Black));
+        TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(getResources().getColor(R.color.YellowGreen));
+
+        EditText messageText = (EditText) parentView.findViewById(R.id.messageSendInbox);
+
+        final String messageToSend = messageText.getText().toString();
+
+        parentView.findViewById(R.id.buttonSendInbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage(destination, messageToSend);
+            }
+        });
+
+        mAdapter = new InboxAdapter(getActivity(), messagesList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -77,7 +113,7 @@ public class Inbox_Messages extends BackHandledFragment {
                     String longDate = cur.getString(index_Date);
                     String int_Type = cur.getString(index_Type);
 
-                    SMS sms = new SMS(strAddress, strbody, longDate, int_Type);
+                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type);
                     messagesList.add(sms);
                 } while (cur.moveToNext());
                 mAdapter.notifyDataSetChanged();
@@ -92,11 +128,33 @@ public class Inbox_Messages extends BackHandledFragment {
 
     @Override
     public boolean onBackPressed() {
-        ((MainActivity) getActivity()).changeFragment(new SmsDisplayFragment(), "home");
+        ((MainActivity) getActivity()).changeFragment(new SmsDisplayFragment(), "home", R.anim.enter_anim, R.anim.exit_anim);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void setMessageBody(SMS message) {
         Inbox_Messages.message = message;
+    }
+
+    public void sendMessage(String destination, String message) {
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            ArrayList<String> messageParts = smsManager.divideMessage(message);
+            smsManager.sendMultipartTextMessage(destination, null, messageParts, null, null);
+            snackbar.show();
+        } catch (Exception e) {
+            snackbar.setText("SMS faild, please try again.").show();
+            e.printStackTrace();
+        }
     }
 }

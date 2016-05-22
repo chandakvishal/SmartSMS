@@ -40,22 +40,22 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.MyViewHolder> {
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View itemView = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.sms_display_row, parent, false);
+                R.layout.sms_display_row, parent, false);
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-            String email = String.valueOf(questionList.get(position).senderAddress);
-            holder.email.setText(email);
+        String email = String.valueOf(questionList.get(position).senderAddress);
+        holder.email.setText(email);
 
-            final TypedArray imgs = ctx.getResources().obtainTypedArray(R.array.userArray);
-            final Random rand = new Random();
-            final int rndInt = rand.nextInt(imgs.length());
-            final int resID = imgs.getResourceId(rndInt, 0);
+        final TypedArray imgs = ctx.getResources().obtainTypedArray(R.array.userArray);
+        final Random rand = new Random();
+        final int rndInt = rand.nextInt(imgs.length());
+        final int resID = imgs.getResourceId(rndInt, 0);
 
-            holder.image.setImageResource(resID);
+        holder.image.setImageResource(resID);
 
     }
 
