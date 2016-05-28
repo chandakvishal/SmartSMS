@@ -9,8 +9,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class SmsBroadcastReceiver extends BroadcastReceiver
-{
+public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     public static final String SMS_BUNDLE = "pdus";
 
@@ -22,14 +21,15 @@ public class SmsBroadcastReceiver extends BroadcastReceiver
         Bundle intentExtras = intent.getExtras();
         if (intentExtras != null) {
             Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
-            for (int i = 0; i < sms.length; ++i) {
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
+            assert sms != null;
+            for (Object sm : sms) {
+                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sm);
 
                 String address = smsMessage.getOriginatingAddress();
                 String smsBody = smsMessage.getMessageBody();
                 String time = String.valueOf(smsMessage.getTimestampMillis());
 
-                m = new SMS(address, time, smsBody, "1");
+                m = new SMS(address, time, smsBody, "1", address);
                 updateList.add(m);
             }
             Toast.makeText(context, m.getSenderAddress(), Toast.LENGTH_SHORT).show();

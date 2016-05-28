@@ -6,12 +6,14 @@ public class SMS {
     public String date;
     public String message;
     public String type;
+    public String senderNumber;
 
-    public SMS(String senderAddress, String date, String message, String type) {
+    public SMS(String senderAddress, String date, String message, String type, String senderNumber) {
         this.date = date;
         this.senderAddress = senderAddress;
         this.message = message;
         this.type = type;
+        this.senderNumber = senderNumber;
     }
 
     public String getSenderAddress() {
@@ -44,5 +46,21 @@ public class SMS {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getSenderNumber() {
+        return senderNumber;
+    }
+
+    public void setSenderNumber(String senderNumber) {
+        this.senderNumber = senderNumber;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

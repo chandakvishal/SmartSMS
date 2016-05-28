@@ -1,17 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button2"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="52dp"
-        android:layout_marginEnd="52dp"
-        android:layout_marginBottom="52dp" />
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/coordinatorLayout">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <MultiAutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtPhoneNumber"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="true"/>
+
+        <LinearLayout
+            android:id="@+id/ll_send_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/White"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/messageSendInbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_weight="5"
+                android:gravity="top|start"
+                android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
+                android:maxLines="10"
+                android:scrollHorizontally="false" />
+
+            <ImageButton
+                android:id="@+id/buttonSendInbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/send_button"
+                android:gravity="center"
+                android:paddingRight="5dp"
+                android:src="@drawable/ic_send_black_36dp" />
+        </LinearLayout>
+
     </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

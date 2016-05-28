@@ -1,9 +1,12 @@
 package com.example.vinay.sms;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,8 +14,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.example.vinay.sms.Utilities.BackHandledFragment;
+import com.example.vinay.sms.Utilities.ClickListener;
+import com.example.vinay.sms.Utilities.DividerItemDecoration;
+import com.example.vinay.sms.Utilities.RecyclerTouchListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +45,10 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
     Inbox_Messages inbox_messages = new Inbox_Messages();
 
+    private FloatingActionButton sendMessageFloatingButton;
+
+    private Boolean exit = false;
+
     @SuppressWarnings("ConstantConditions")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,10 +56,21 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_answers);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Inbox");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         setHasOptionsMenu(true);
+
+        sendMessageFloatingButton = (FloatingActionButton) parentView.findViewById(R.id.sendMessageFloatingButton);
+
+        sendMessageFloatingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                Intent intent = new Intent(getActivity(), SendMessage.class);
+                startActivity(intent);
+            }
+
+        });
 
         //Floating Action Button Menu Configuration
 
@@ -83,7 +108,20 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
     @Override
     public boolean onBackPressed() {
-        return false;
+        if (exit) {
+            getActivity().finish(); // finish activity
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), "Press Back again to Exit.",
+                    Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exit = false;
+                }
+            }, 3 * 1000);
+        }
+        return true;
     }
 
     public void getMessages() {
@@ -91,38 +129,51 @@ public class SmsDisplayFragment extends BackHandledFragment {
         Cursor cursor1 = getActivity().getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
         getActivity().startManagingCursor(cursor1);
         HashSet<String> senderHashSet = new HashSet<>();
-        String[] columns = new String[]{"address", "person", "date", "body", "type"};
-        assert cursor1 != null;
-        if (cursor1.getCount() > 0) {
+        if (smsList.size() == 0) {
+            String[] columns = new String[]{"address", "person", "date", "body", "type"};
+            assert cursor1 != null;
+            if (cursor1.getCount() > 0) {
 //            String count = Integer.toString(cursor1.getCount());
-            while (cursor1.moveToNext()) {
-                String sender = cursor1.getString(cursor1.getColumnIndex(columns[0]));
+                while (cursor1.moveToNext()) {
+                    String sender = cursor1.getString(cursor1.getColumnIndex(columns[0]));
 //                String name = cursor1.getString(cursor1.getColumnIndex(columns[1]));
-                String date = cursor1.getString(cursor1.getColumnIndex(columns[2]));
-                String msg = cursor1.getString(cursor1.getColumnIndex(columns[3]));
-                String type = cursor1.getString(cursor1.getColumnIndex(columns[4]));
-                SMS m = new SMS(sender, date, msg, type);
-                if (!senderHashSet.contains(sender)) {
-                    uniquelinkedHashSet.add(m);
-                    senderHashSet.add(sender);
+                    String date = cursor1.getString(cursor1.getColumnIndex(columns[2]));
+                    String msg = cursor1.getString(cursor1.getColumnIndex(columns[3]));
+                    String type = cursor1.getString(cursor1.getColumnIndex(columns[4]));
+                    SMS m = new SMS(sender, date, msg, type, sender);
+                    if (!senderHashSet.contains(sender)) {
+                        uniquelinkedHashSet.add(m);
+                        senderHashSet.add(sender);
+                    }
+                    linkedHashSet.add(m);
                 }
-                linkedHashSet.add(m);
-            }
-            smsList.addAll(uniquelinkedHashSet);
-            for (SMS sender : smsList) {
-                String senderAddress = sender.getSenderAddress();
-                if (senderAddress.matches("^([+,.\\s,0-9]*)([0-9]+)")) {
-                    senderAddress = getContactName(senderAddress);
+                smsList.clear();
+                smsList.addAll(uniquelinkedHashSet);
+                for (SMS sender : smsList) {
+                    String senderAddress = sender.getSenderAddress();
+                    if (senderAddress.matches("^([+,.\\s0-9]*)([0-9]+)")) {
+                        senderAddress = getContactName(senderAddress);
+                    }
+                    sender.setSenderAddress(senderAddress);
                 }
-                sender.setSenderAddress(senderAddress);
+                mAdapter.notifyDataSetChanged();
             }
-            mAdapter.notifyDataSetChanged();
         }
     }
 
     public void updateList(final ArrayList smsMessage) {
         smsList.addAll(smsMessage);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 //    public static Bitmap loadContactPhoto(ContentResolver cr, long id) {

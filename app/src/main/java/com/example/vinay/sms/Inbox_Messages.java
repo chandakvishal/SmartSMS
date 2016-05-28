@@ -43,7 +43,7 @@ public class Inbox_Messages extends BackHandledFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.inbox_holder, container, false);
 
-        final String destination = message.getSenderAddress();
+        final String destination = message.getSenderNumber();
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_inbox);
 
@@ -64,13 +64,12 @@ public class Inbox_Messages extends BackHandledFragment {
         TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(getResources().getColor(R.color.YellowGreen));
 
-        EditText messageText = (EditText) parentView.findViewById(R.id.messageSendInbox);
-
-        final String messageToSend = messageText.getText().toString();
+        final EditText messageText = (EditText) parentView.findViewById(R.id.messageSendInbox);
 
         parentView.findViewById(R.id.buttonSendInbox).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final String messageToSend = String.valueOf(messageText.getText());
                 sendMessage(destination, messageToSend);
             }
         });
@@ -97,7 +96,7 @@ public class Inbox_Messages extends BackHandledFragment {
         try {
             Uri uri = Uri.parse(SMS_URI_INBOX);
             String[] projection = new String[]{"_id", "address", "person", "body", "date", "type"};
-            String address = "address=\'" + message.getSenderAddress() + "\'";
+            String address = "address=\'" + message.getSenderNumber() + "\'";
             Cursor cur = getActivity().getContentResolver().query(uri, projection, address, null, "date desc");
             assert cur != null;
             if (cur.moveToFirst()) {
@@ -113,7 +112,7 @@ public class Inbox_Messages extends BackHandledFragment {
                     String longDate = cur.getString(index_Date);
                     String int_Type = cur.getString(index_Type);
 
-                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type);
+                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type, strAddress);
                     messagesList.add(sms);
                 } while (cur.moveToNext());
                 mAdapter.notifyDataSetChanged();
@@ -149,11 +148,13 @@ public class Inbox_Messages extends BackHandledFragment {
     public void sendMessage(String destination, String message) {
         try {
             SmsManager smsManager = SmsManager.getDefault();
+            Log.d("TAG", "sendMessage: MESSAGE: " + message);
             ArrayList<String> messageParts = smsManager.divideMessage(message);
+            Log.d("TAG", "sendMessage: SIZE: " + messageParts.size());
             smsManager.sendMultipartTextMessage(destination, null, messageParts, null, null);
             snackbar.show();
         } catch (Exception e) {
-            snackbar.setText("SMS faild, please try again.").show();
+            snackbar.setText("SMS failed, please try again.").show();
             e.printStackTrace();
         }
     }
