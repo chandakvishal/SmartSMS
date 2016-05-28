@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -37,8 +39,11 @@ public class SmsReceiver extends BroadcastReceiver {
         // notification is selected
 
         Intent notificationIntent = new Intent(context, SmsDisplayFragment.class);
+
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
+
+        Uri soundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             Bundle bundle = intent.getExtras();
@@ -58,23 +63,26 @@ public class SmsReceiver extends BroadcastReceiver {
                         String time = String.valueOf(msgs[i].getTimestampMillis());
                         String read = String.valueOf(msgs[i].getStatusOnIcc());
 
+                        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + msg_from));
+                        PendingIntent callPendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), callIntent, 0);
+
                         Log.d(TAG, "onReceive: " + msg_from + "::" + msgBody);
 
                         SMS m = new SMS(msg_from, time, msgBody, "1", msg_from, read);
 
+                        String address = smsDisplayFragment.getSenderNumber(msg_from);
 
                         // build notification
                         // the addAction re-use the same intent to keep the example short
-                        Notification n  = new Notification.Builder(context)
-                                .setContentTitle("New message from " + msg_from)
-                                .setContentText("Subject")
+                        Notification n = new Notification.Builder(context)
+                                .setContentTitle(address)
                                 .setSmallIcon(R.mipmap.ic_launcher)
                                 .setContentIntent(pIntent)
+                                .setContentText(msgBody.length() < 9 ? msgBody : msgBody.substring(0, 9) + "...")
                                 .setAutoCancel(true)
                                 .setStyle(new Notification.BigTextStyle().bigText(msgBody))
-                                .addAction(R.drawable.ic_call, "Call", pIntent)
-                                .addAction(R.drawable.ic_more, "More", pIntent).build();
-
+                                .setSound(soundUri)
+                                .addAction(R.drawable.ic_call, "Call", callPendingIntent).build();
 
                         NotificationManager notificationManager =
                                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

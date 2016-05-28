@@ -170,19 +170,23 @@ public class SmsDisplayFragment extends BackHandledFragment {
                 smsList.addAll(uniquelinkedHashSet);
                 for (SMS sender : smsList) {
                     String senderAddress = sender.getSenderAddress();
-                    if (senderAddress.matches("^([+,.\\s0-9]*)([0-9]+)")) {
-                        senderAddress = getContactName(senderAddress);
-                    }
-                    sender.setSenderAddress(senderAddress);
+                    sender.setSenderAddress(getSenderNumber(senderAddress));
                 }
                 mAdapter.notifyDataSetChanged();
             }
         }
     }
 
+    public String getSenderNumber(String senderAddress) {
+        if (senderAddress.matches("^([+,.\\s0-9]*)([0-9]+)")) {
+            senderAddress = getContactName(senderAddress);
+        }
+        return senderAddress;
+    }
+
     public void updateList(final ArrayList<SMS> smsMessage) {
         HashSet<String> tempHashSet = new HashSet<>();
-        for (SMS message: smsMessage) {
+        for (SMS message : smsMessage) {
             Log.d(TAG, "updateList: SENDER NUMBER" + message.getReadStatus());
             smsList.add(0, message);
             ContentValues values = new ContentValues();
