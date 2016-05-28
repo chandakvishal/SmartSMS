@@ -1,5 +1,6 @@
 package com.example.vinay.sms;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,10 +37,13 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private List<SMS> smsList = new ArrayList<>();
+    private static List<SMS> smsList = new ArrayList<>();
 
-    private LinkedHashSet<SMS> linkedHashSet = new LinkedHashSet<>();
-    private LinkedHashSet<SMS> uniquelinkedHashSet = new LinkedHashSet<>();
+    private static LinkedHashSet<String> senderHashSet;
+
+    private static LinkedHashSet<SMS> linkedHashSet = new LinkedHashSet<>();
+
+    private static LinkedHashSet<SMS> uniquelinkedHashSet = new LinkedHashSet<>();
 
     HashMap<String, String> contactsStored = new HashMap<>();
 
@@ -49,12 +53,18 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
     private Boolean exit = false;
 
+    public static final String ACTION_DATA_UPDATE_READY = "ACTION_DATA_UPDATE_READY";
+
+    private SmsReceiver smsReceiver;
+
     @SuppressWarnings("ConstantConditions")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.sms_display, container, false);
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_answers);
+
+        smsReceiver = new SmsReceiver(this);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Inbox");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -106,6 +116,14 @@ public class SmsDisplayFragment extends BackHandledFragment {
         return parentView;
     }
 
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (null != smsReceiver) {
+//            getActivity().registerReceiver(smsReceiver, new IntentFilter(ACTION_DATA_UPDATE_READY));
+//        }
+//    }
+
     @Override
     public boolean onBackPressed() {
         if (exit) {
@@ -126,11 +144,11 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
     public void getMessages() {
         Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
-        Cursor cursor1 = getActivity().getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
+        Cursor cursor1 = getActivity().getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type", "read"}, null, null, null);
         getActivity().startManagingCursor(cursor1);
-        HashSet<String> senderHashSet = new HashSet<>();
+        senderHashSet = new LinkedHashSet<>();
         if (smsList.size() == 0) {
-            String[] columns = new String[]{"address", "person", "date", "body", "type"};
+            String[] columns = new String[]{"address", "person", "date", "body", "type", "read"};
             assert cursor1 != null;
             if (cursor1.getCount() > 0) {
 //            String count = Integer.toString(cursor1.getCount());
@@ -140,7 +158,8 @@ public class SmsDisplayFragment extends BackHandledFragment {
                     String date = cursor1.getString(cursor1.getColumnIndex(columns[2]));
                     String msg = cursor1.getString(cursor1.getColumnIndex(columns[3]));
                     String type = cursor1.getString(cursor1.getColumnIndex(columns[4]));
-                    SMS m = new SMS(sender, date, msg, type, sender);
+                    String read = cursor1.getString(cursor1.getColumnIndex(columns[5]));
+                    SMS m = new SMS(sender, date, msg, type, sender, read);
                     if (!senderHashSet.contains(sender)) {
                         uniquelinkedHashSet.add(m);
                         senderHashSet.add(sender);
@@ -161,8 +180,23 @@ public class SmsDisplayFragment extends BackHandledFragment {
         }
     }
 
-    public void updateList(final ArrayList smsMessage) {
-        smsList.addAll(smsMessage);
+    public void updateList(final ArrayList<SMS> smsMessage) {
+        HashSet<String> tempHashSet = new HashSet<>();
+        for (SMS message: smsMessage) {
+            Log.d(TAG, "updateList: SENDER NUMBER" + message.getReadStatus());
+            smsList.add(0, message);
+            ContentValues values = new ContentValues();
+            values.put("address", message.getSenderNumber());//sender name
+            values.put("body", message.getMessage());
+            getActivity().getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
+        }
+        for (SMS sender : smsList) {
+            String senderAddress = sender.getSenderAddress();
+            if (senderAddress.matches("^([+,.\\s0-9]*)([0-9]+)")) {
+                senderAddress = getContactName(senderAddress);
+            }
+            sender.setSenderAddress(senderAddress);
+        }
         mAdapter.notifyDataSetChanged();
     }
 

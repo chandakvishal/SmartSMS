@@ -30,7 +30,7 @@ public class Inbox_Messages extends BackHandledFragment {
 
     private InboxAdapter mAdapter;
 
-//    private String TAG = MainActivity.class.getSimpleName();
+    private String TAG = MainActivity.class.getSimpleName();
 
     private List<SMS> messagesList = new ArrayList<>();
 
@@ -95,8 +95,9 @@ public class Inbox_Messages extends BackHandledFragment {
         final String SMS_URI_INBOX = "content://sms/inbox";
         try {
             Uri uri = Uri.parse(SMS_URI_INBOX);
-            String[] projection = new String[]{"_id", "address", "person", "body", "date", "type"};
+            String[] projection = new String[]{"_id", "address", "person", "body", "date", "type", "read"};
             String address = "address=\'" + message.getSenderNumber() + "\'";
+            Log.d(TAG, "getMessages: " + address);
             Cursor cur = getActivity().getContentResolver().query(uri, projection, address, null, "date desc");
             assert cur != null;
             if (cur.moveToFirst()) {
@@ -105,14 +106,16 @@ public class Inbox_Messages extends BackHandledFragment {
                 int index_Date = cur.getColumnIndex("date");
                 int index_Body = cur.getColumnIndex("body");
                 int index_Type = cur.getColumnIndex("type");
+                int index_Read = cur.getColumnIndex("read");
                 do {
                     String strAddress = cur.getString(index_Address);
 //                    String intPerson = cur.getString(index_Person);
                     String strbody = cur.getString(index_Body);
                     String longDate = cur.getString(index_Date);
                     String int_Type = cur.getString(index_Type);
+                    String read = cur.getString(index_Read);
 
-                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type, strAddress);
+                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type, strAddress, read);
                     messagesList.add(sms);
                 } while (cur.moveToNext());
                 mAdapter.notifyDataSetChanged();

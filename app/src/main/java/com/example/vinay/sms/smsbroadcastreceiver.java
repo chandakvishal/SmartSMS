@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -15,9 +16,16 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     private SMS m;
 
+    private String TAG = SmsBroadcastReceiver.class.getSimpleName();
+
+
     private ArrayList<SMS> updateList = new ArrayList<>();
 
     public void onReceive(Context context, Intent intent) {
+
+        Toast.makeText(context, "VISHAL", Toast.LENGTH_SHORT).show();
+
+        Log.d(TAG, "onReceive: " + "***BroadcastReceiver***");
         Bundle intentExtras = intent.getExtras();
         if (intentExtras != null) {
             Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
@@ -28,8 +36,9 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 String address = smsMessage.getOriginatingAddress();
                 String smsBody = smsMessage.getMessageBody();
                 String time = String.valueOf(smsMessage.getTimestampMillis());
+                String read = String.valueOf(smsMessage.getStatusOnIcc());
 
-                m = new SMS(address, time, smsBody, "1", address);
+                m = new SMS(address, time, smsBody, "1", address, read);
                 updateList.add(m);
             }
             Toast.makeText(context, m.getSenderAddress(), Toast.LENGTH_SHORT).show();

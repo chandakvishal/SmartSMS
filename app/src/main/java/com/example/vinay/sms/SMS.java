@@ -7,13 +7,15 @@ public class SMS {
     public String message;
     public String type;
     public String senderNumber;
+    public String readStatus;
 
-    public SMS(String senderAddress, String date, String message, String type, String senderNumber) {
+    public SMS(String senderAddress, String date, String message, String type, String senderNumber, String readStatus) {
         this.date = date;
         this.senderAddress = senderAddress;
         this.message = message;
         this.type = type;
         this.senderNumber = senderNumber;
+        this.readStatus = readStatus;
     }
 
     public String getSenderAddress() {
@@ -30,6 +32,14 @@ public class SMS {
 
     public void setTitle(String title) {
         this.date = title;
+    }
+
+    public String getReadStatus() {
+        return readStatus;
+    }
+
+    public void setReadStatus(String readStatus) {
+        this.readStatus = readStatus;
     }
 
     public String getMessage() {
