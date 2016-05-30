@@ -3,7 +3,10 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:isScrollContainer="true"
+    android:scrollbars="vertical"
+    android:overScrollMode="ifContentScrolls">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -13,7 +16,9 @@
             android:id="@+id/recycler_view_for_inbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:layout_above="@+id/ll_send_message"
+            android:layout_alignParentTop="true" />
 
         <LinearLayout
             android:id="@+id/ll_send_message"
@@ -27,9 +32,7 @@
                 android:id="@+id/messageSendInbox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="5"
-                android:gravity="top|start"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
                 android:maxLines="10"
                 android:scrollHorizontally="false" />
@@ -38,7 +41,6 @@
                 android:id="@+id/buttonSendInbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
                 android:background="#00FFFFFF"
                 android:contentDescription="@string/send_button"
                 android:gravity="center"

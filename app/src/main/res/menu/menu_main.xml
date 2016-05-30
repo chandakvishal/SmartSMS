@@ -12,11 +12,4 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
 
-    <item
-        android:id="@+id/drive"
-        android:icon="@drawable/common_ic_googleplayservices"
-        android:orderInCategory="100"
-        android:title="@string/google_drive_backup"
-        app:showAsAction="collapseActionView|ifRoom" />
-
 </menu>

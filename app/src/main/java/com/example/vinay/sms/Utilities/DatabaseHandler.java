@@ -97,7 +97,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
-        Log.i("Added User", "Successfully Added User in" + TABLE_NAME + " Table");
+        Log.i("Added User " + number, "Successfully Added User in" + TABLE_NAME + " Table");
         db.close(); // Closing database connection
     }
 
@@ -174,9 +174,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<SMS> getAllMessages(String senderAddress) {
 
         String selectQuery = "SELECT * FROM " + TABLE_INBOX
-                + " WHERE ADDRESS = \"" + senderAddress
-                + "\" UNION SELECT * FROM "
-                + TABLE_SENT + " WHERE ADDRESS = \"" + senderAddress + "\"";
+                + " WHERE NUMBER LIKE \"%" + senderAddress
+                + "%\" UNION SELECT * FROM "
+                + TABLE_SENT + " WHERE NUMBER LIKE \"%" + senderAddress + "%\"";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Log.d("TAG", "searchTable: " + selectQuery);
@@ -204,23 +204,4 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return list;
     }
-
-    /**
-     * Re create database
-     * Delete all tables and create them again
-     */
-    public void resetUserTables() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        // Delete All Rows
-        db.delete(TABLE_INBOX, null, null);
-        db.delete(TABLE_SENT, null, null);
-        Log.d("Database Handler", "resetUserTables: Tables Deleted Successfully");
-        db.close();
-    }
-
-    public boolean deleteDatabase(Context context) {
-        Log.d("Database Handler", "resetUserTables: Databse Deleted Successfully");
-        return context.deleteDatabase(DATABASE_NAME);
-    }
-
 }

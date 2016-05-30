@@ -42,8 +42,6 @@ public class SmsReceiver extends BroadcastReceiver {
         // prepare intent which is triggered if the
         // notification is selected
 
-        Intent notificationIntent = new Intent(context, SmsDisplayFragment.class);
-
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
 

@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vinay.sms.Adapter.InboxAdapter;
@@ -47,8 +44,6 @@ public class Inbox_Messages extends BackHandledFragment {
 
     private static SMS message;
 
-    private Snackbar snackbar;
-
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,15 +61,6 @@ public class Inbox_Messages extends BackHandledFragment {
 
         setHasOptionsMenu(true);
 
-        //Snackbar Settings Initially
-        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) parentView.findViewById(R.id
-                .coordinatorLayout);
-        snackbar = Snackbar.make(coordinatorLayout, "Successfully Sent the message", Snackbar.LENGTH_LONG);
-        final View snackBarView = snackbar.getView();
-        snackBarView.setBackgroundColor(getResources().getColor(R.color.Black));
-        TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(getResources().getColor(R.color.YellowGreen));
-
         final EditText messageText = (EditText) parentView.findViewById(R.id.messageSendInbox);
 
         parentView.findViewById(R.id.buttonSendInbox).setOnClickListener(new View.OnClickListener() {
@@ -85,7 +71,7 @@ public class Inbox_Messages extends BackHandledFragment {
             }
         });
 
-        mAdapter = new InboxAdapter(getActivity(), messagesList);
+        mAdapter = new InboxAdapter(messagesList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -103,48 +89,15 @@ public class Inbox_Messages extends BackHandledFragment {
 
     private void getMessages() {
 
-        final String SMS_URI_INBOX = "content://sms/inbox";
-        final String SMS_URI_SENT = "content://sms/sentt";
         try {
-
             DatabaseHandler db = new DatabaseHandler(getActivity().getApplicationContext());
-            List<SMS> list = new ArrayList<>();
+            List<SMS> list;
             String senderAddress = message.getSenderNumber();
             senderAddress = senderAddress.startsWith("+91") ? senderAddress.substring(3) : senderAddress;
             list = db.getAllMessages(senderAddress);
             messagesList.addAll(list);
             Log.d(TAG, "getMessages: " + messagesList.size());
             mAdapter.notifyDataSetChanged();
-            //Reading all the messages from inbox
-//            Uri uri = Uri.parse(SMS_URI_INBOX);
-//            String[] projection = new String[]{"_id", "address", "person", "body", "date", "type", "read"};
-//            String address = "address=\'" + message.getSenderNumber() + "\'";
-//            Log.d(TAG, "getMessages: " + address);
-//            Cursor cur = getActivity().getContentResolver().query(uri, projection, address, null, "date desc");
-//            assert cur != null;
-//            if (cur.moveToFirst()) {
-//                int index_Address = cur.getColumnIndex("address");
-////                int index_Person = cur.getColumnIndex("person");
-//                int index_Date = cur.getColumnIndex("date");
-//                int index_Body = cur.getColumnIndex("body");
-//                int index_Type = cur.getColumnIndex("type");
-//                int index_Read = cur.getColumnIndex("read");
-//                do {
-//                    String strAddress = cur.getString(index_Address);
-////                    String intPerson = cur.getString(index_Person);
-//                    String strbody = cur.getString(index_Body);
-//                    String longDate = cur.getString(index_Date);
-//                    String int_Type = cur.getString(index_Type);
-//                    String read = cur.getString(index_Read);
-//
-//                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type, strAddress, read, "false");
-//                    messagesList.add(sms);
-//                } while (cur.moveToNext());
-//                if (!cur.isClosed()) {
-//                    cur.close();
-//                }
-//
-//            }
         } catch (SQLiteException ex) {
             Log.d("SQLiteException", ex.getMessage());
         }

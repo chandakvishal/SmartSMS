@@ -15,27 +15,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.Search.SearchableActivity;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
-        BackHandledFragment.BackHandlerInterface, SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements BackHandledFragment.BackHandlerInterface, SearchView.OnQueryTextListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private SearchView searchView;
 
-    ArrayList<String> smsMessagesList = new ArrayList<>();
+//    ArrayList<String> smsMessagesList = new ArrayList<>();
 
     private BackHandledFragment selectedFragment;
 
@@ -59,29 +53,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             getSupportActionBar().setElevation(15.0f);
         }
 
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.main_fragment);
-        assert frameLayout != null;
-        frameLayout.getForeground().setAlpha(0);
-
         if (savedInstanceState == null)
             changeFragment(new SmsDisplayFragment(), "smsDisplayFragment");
-    }
-
-    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-        try {
-            String[] smsMessages = smsMessagesList.get(pos).split("\n");
-            String address = smsMessages[0];
-            String smsMessage = "";
-            for (int i = 1; i < smsMessages.length; ++i) {
-                smsMessage += smsMessages[i];
-            }
-
-            String smsMessageStr = address + "\n";
-            smsMessageStr += smsMessage;
-            Toast.makeText(this, smsMessageStr, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void changeFragment(Fragment targetFragment, String tag) {
@@ -116,14 +89,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             super.onBackPressed();
         }
     }
-
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-//        db.resetUserTables();
-//        db.deleteDatabase(getApplicationContext());
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -164,8 +129,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         Log.d(TAG, "onSuggestionClick:1 " + Arrays.toString(cursor.getColumnNames()));
                         Log.d(TAG, "onSuggestionClick:1 " + geolocation2);
 
-                        Intent intent = getIntent();
-
                         intentShowLocal.putExtra("query", geolocation2);
                         intentShowLocal.setAction("android.intent.action.VIEW");
                         startActivity(intentShowLocal);
@@ -180,28 +143,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-//        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-//            @Override
-//            public boolean onSuggestionSelect(int position) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onSuggestionClick(int position) {
-//                Cursor cursor = searchSuggestions.getCursor();
-//                cursor.moveToPosition( position );
-//                String username = ContactProvider.getUsername( cursor );
-//                getLoaderManager().destroyLoader( R.id.action_search );
-//                handleSearch( username );
-//                return true;
-//            }
-//        });
         return false;
     }
 }

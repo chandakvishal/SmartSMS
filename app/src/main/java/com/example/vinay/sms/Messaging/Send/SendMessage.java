@@ -121,7 +121,6 @@ public class SendMessage extends BackHandledFragment {
             managedCursor.close();
 
             String[] nameValue = contactNameList.toArray(new String[contactNameList.size()]);
-            String[] numberValue = contactNumberList.toArray(new String[contactNameList.size()]);
 
             ArrayAdapter adapter = new ArrayAdapter<>(
                     getActivity(), android.R.layout.simple_list_item_1, nameValue);
@@ -169,7 +168,8 @@ public class SendMessage extends BackHandledFragment {
                         values.put("date", date);
 
                         getActivity().getContentResolver().insert(Uri.parse("content://sms/sent"), values);
-                        db.addUser(phoneNumber, date, message, null, phoneNumber, null, "true", TABLE_SENT);
+                        String tempPhoneNumber = phoneNumber.replaceAll("\\D+","");
+                        db.addUser(tempPhoneNumber, date, message, null, phoneNumber, null, "true", TABLE_SENT);
                         Toast.makeText(getActivity().getBaseContext(), "SMS sent",
                                 Toast.LENGTH_SHORT).show();
                         break;

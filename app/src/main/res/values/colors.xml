@@ -144,24 +144,4 @@
     <color name="DarkBlue">#00008B</color>
     <color name="Navy">#000080</color>
     <color name="Black">#000000</color>
-    <string-array name="question_count_color">
-        <item>#24c6d5</item>
-        <item>#57dd86</item>
-        <item>#ad7dcf</item>
-        <item>#ff484d</item>
-        <item>#fcba59</item>
-        <item>#24c6d5</item>
-    </string-array>
-    <string-array name="answer_email_color">
-        <!--<item>#778899</item>-->
-        <!--<item>#708090</item>-->
-        <!--<item>#808080</item>-->
-        <!--<item>#A9A9A9</item>-->
-        <item>#24c6d5</item>
-        <item>#57dd86</item>
-        <item>#ad7dcf</item>
-        <item>#ff484d</item>
-        <item>#fcba59</item>
-        <item>#24c6d5</item>
-    </string-array>
 </resources>

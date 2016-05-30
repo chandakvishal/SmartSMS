@@ -8,21 +8,12 @@
         <item name="colorAccent">@color/CornflowerBlue</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="popupMenuStyle">@style/PopupMenu</item>
 
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:colorBackground">@color/SteelBlue</item>
 
-    </style>
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:colorBackground">@color/SteelBlue</item>
-    </style>
-
-    <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
-        <item name="android:popupBackground">@drawable/round_corner_popup</item>
     </style>
 
     <style name="checkBoxStyle" parent="Base.Theme.AppCompat">

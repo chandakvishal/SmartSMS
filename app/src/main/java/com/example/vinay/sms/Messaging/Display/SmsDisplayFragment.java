@@ -22,10 +22,10 @@ import android.widget.Toast;
 import com.example.vinay.sms.Adapter.SmsAdapter;
 import com.example.vinay.sms.Helper.SmsTouchHelper;
 import com.example.vinay.sms.MainActivity;
-import com.example.vinay.sms.R;
+import com.example.vinay.sms.Messaging.Receive.SmsReceiver;
 import com.example.vinay.sms.Messaging.SMS;
 import com.example.vinay.sms.Messaging.Send.SendMessage;
-import com.example.vinay.sms.Messaging.Receive.SmsReceiver;
+import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.ClickListener;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
@@ -243,15 +243,6 @@ public class SmsDisplayFragment extends BackHandledFragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
-//    public static Bitmap loadContactPhoto(ContentResolver cr, long id) {
-//        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
-//        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-//        if (input == null) {
-//            return null;
-//        }
-//        return BitmapFactory.decodeStream(input);
-//    }
 
     public void storeContacts() {
         Cursor cursor = getActivity().getContentResolver().query
