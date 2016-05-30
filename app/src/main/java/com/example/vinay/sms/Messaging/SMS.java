@@ -8,14 +8,26 @@ public class SMS {
     public String type;
     public String senderNumber;
     public String readStatus;
+    public String sentStatus;
 
-    public SMS(String senderAddress, String date, String message, String type, String senderNumber, String readStatus) {
+    /**
+     * @param senderAddress address of the sender
+     * @param date date the Message was received
+     * @param message the Actual Body of the Message
+     * @param type type of the message
+     * @param senderNumber number of the sender
+     * @param readStatus read status of the message
+     * @param sentStatus true indicates message was sent, false indicates message was received
+     */
+    public SMS(String senderAddress, String date, String message,
+               String type, String senderNumber, String readStatus, String sentStatus) {
         this.date = date;
         this.senderAddress = senderAddress;
         this.message = message;
         this.type = type;
         this.senderNumber = senderNumber;
         this.readStatus = readStatus;
+        this.sentStatus = sentStatus;
     }
 
     public String getSenderAddress() {
@@ -72,5 +84,13 @@ public class SMS {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String isSentStatus() {
+        return sentStatus;
+    }
+
+    public void setSentStatus(String sentStatus) {
+        this.sentStatus = sentStatus;
     }
 }

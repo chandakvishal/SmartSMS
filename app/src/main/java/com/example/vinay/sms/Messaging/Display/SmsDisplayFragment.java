@@ -160,7 +160,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
                     String type = cursor1.getString(cursor1.getColumnIndex(columns[4]));
                     String read = cursor1.getString(cursor1.getColumnIndex(columns[5]));
 
-                    SMS m = new SMS(sender, date, msg, type, sender, read);
+                    SMS m = new SMS(sender, date, msg, type, sender, read, "false");
                     if (!senderHashSet.contains(sender)) {
                         uniquelinkedHashSet.add(m);
                         senderHashSet.add(sender);
@@ -187,7 +187,8 @@ public class SmsDisplayFragment extends BackHandledFragment {
                                     String senderNumber = eachMessage.getSenderNumber();
                                     String type = eachMessage.getType();
                                     String readStatus = eachMessage.getReadStatus();
-                                    db.addUser(senderAddress, date, msg, type, senderNumber, readStatus, TABLE_INBOX);
+                                    String sentStatus = eachMessage.isSentStatus();
+                                    db.addUser(senderAddress, date, msg, type, senderNumber, readStatus, sentStatus, TABLE_INBOX);
                                 }
                             }
                         }
@@ -205,13 +206,26 @@ public class SmsDisplayFragment extends BackHandledFragment {
     }
 
     public void updateList(final ArrayList<SMS> smsMessage) {
-        for (SMS message : smsMessage) {
-            Log.d(TAG, "updateList: SENDER NUMBER" + message.getReadStatus());
-            smsList.add(0, message);
+        for (SMS eachMessage : smsMessage) {
+            Log.d(TAG, "updateList: SENDER NUMBER" + eachMessage.getReadStatus());
+            smsList.add(0, eachMessage);
             ContentValues values = new ContentValues();
-            values.put("address", message.getSenderNumber());//sender name
-            values.put("body", message.getMessage());
+
+            String senderAddress = eachMessage.getSenderAddress();
+            String date = eachMessage.getDate();
+            String msg = eachMessage.getMessage();
+            String senderNumber = eachMessage.getSenderNumber();
+            String type = eachMessage.getType();
+            String readStatus = eachMessage.getReadStatus();
+            String sentStatus = eachMessage.isSentStatus();
+
+            values.put("address", senderNumber);//sender name
+            values.put("body", msg);
+            values.put("date", date);
+            values.put("type", type);
+
             getActivity().getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
+            db.addUser(senderAddress, date, msg, type, senderNumber, readStatus, sentStatus, TABLE_INBOX);
         }
         for (SMS sender : smsList) {
             String senderAddress = sender.getSenderAddress();

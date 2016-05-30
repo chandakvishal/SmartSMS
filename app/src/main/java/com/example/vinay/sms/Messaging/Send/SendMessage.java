@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
@@ -25,19 +27,19 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.MainActivity;
+import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
+import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SendMessage extends BackHandledFragment {
 
+    private static final String TABLE_SENT = "_SENT";
     private String TAG = MainActivity.class.getSimpleName();
-
-    private Snackbar snackbar;
 
     private MultiAutoCompleteTextView txtPhoneNumber;
 
@@ -58,6 +60,8 @@ public class SendMessage extends BackHandledFragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        setHasOptionsMenu(true);
+
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Send Message");
 
         txtPhoneNumber = (MultiAutoCompleteTextView) parentView.findViewById(R.id.txtPhoneNumber);
@@ -77,6 +81,7 @@ public class SendMessage extends BackHandledFragment {
                         if (phoneNumber == null) {
                             phoneNumber = dest;
                         }
+                        phoneNumber = phoneNumber.replaceAll("\\D+","");
                         sendSMS(phoneNumber, messageToSend);
                     }
                 }
@@ -85,7 +90,7 @@ public class SendMessage extends BackHandledFragment {
 
         final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) parentView.findViewById(R.id
                 .coordinatorLayout);
-        snackbar = Snackbar.make(coordinatorLayout, "Successfully Sent the message", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, "Successfully Sent the message", Snackbar.LENGTH_LONG);
         final View snackBarView = snackbar.getView();
         snackBarView.setBackgroundColor(getResources().getColor(R.color.Black));
         TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
@@ -127,10 +132,11 @@ public class SendMessage extends BackHandledFragment {
     }
 
     //---sends an SMS message to another device---
-    private void sendSMS(String phoneNumber, String message) {
+    private void sendSMS(final String phoneNumber, final String message) {
 
         Log.d(TAG, "sendSMS: SENT TO:" + phoneNumber);
 
+        final DatabaseHandler db = new DatabaseHandler(getActivity().getApplicationContext());
 
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
@@ -151,6 +157,19 @@ public class SendMessage extends BackHandledFragment {
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
+
+                        Log.d(TAG, "sendSMS: SENT TO OK:" + phoneNumber);
+
+                        ContentValues values = new ContentValues();
+
+                        String date = String.valueOf(System.currentTimeMillis());
+
+                        values.put("address", phoneNumber);//sender name
+                        values.put("body", message);
+                        values.put("date", date);
+
+                        getActivity().getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+                        db.addUser(phoneNumber, date, message, null, phoneNumber, null, "true", TABLE_SENT);
                         Toast.makeText(getActivity().getBaseContext(), "SMS sent",
                                 Toast.LENGTH_SHORT).show();
                         break;
@@ -180,8 +199,13 @@ public class SendMessage extends BackHandledFragment {
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
+                        Log.d(TAG, "sendSMS: SENT TO OHK:" + phoneNumber);
+
                         Toast.makeText(getActivity().getBaseContext(), "SMS delivered",
                                 Toast.LENGTH_SHORT).show();
+
+
+
                         break;
                     case Activity.RESULT_CANCELED:
                         Toast.makeText(getActivity().getBaseContext(), "SMS not delivered",

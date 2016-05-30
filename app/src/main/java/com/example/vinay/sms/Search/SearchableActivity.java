@@ -8,12 +8,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.vinay.sms.Adapter.SearchAdapter;
-import com.example.vinay.sms.R;
 import com.example.vinay.sms.Messaging.SMS;
+import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
 import com.example.vinay.sms.Utilities.DividerItemDecoration;
 
@@ -41,7 +42,8 @@ public class SearchableActivity extends AppCompatActivity {
             Toast.makeText(this, "Searching by: " + txt, Toast.LENGTH_SHORT).show();
 
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            txt = intent.getDataString();
+            txt = intent.getExtras().getString("query");
+            Log.d("TAG", "onCreateSearchable: " + txt);
             Toast.makeText(this, "Searching by: " + txt, Toast.LENGTH_SHORT).show();
         }
 

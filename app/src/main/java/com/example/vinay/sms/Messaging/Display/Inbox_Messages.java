@@ -6,9 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -30,9 +28,10 @@ import android.widget.Toast;
 import com.example.vinay.sms.Adapter.InboxAdapter;
 import com.example.vinay.sms.Helper.InboxTouchHelper;
 import com.example.vinay.sms.MainActivity;
-import com.example.vinay.sms.R;
 import com.example.vinay.sms.Messaging.SMS;
+import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
+import com.example.vinay.sms.Utilities.DatabaseHandler;
 import com.example.vinay.sms.Utilities.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class Inbox_Messages extends BackHandledFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.inbox_holder, container, false);
 
-        final String destination = message.getSenderNumber();
+        final String destination = message.getSenderAddress();
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_inbox);
 
@@ -105,36 +104,47 @@ public class Inbox_Messages extends BackHandledFragment {
     private void getMessages() {
 
         final String SMS_URI_INBOX = "content://sms/inbox";
+        final String SMS_URI_SENT = "content://sms/sentt";
         try {
-            Uri uri = Uri.parse(SMS_URI_INBOX);
-            String[] projection = new String[]{"_id", "address", "person", "body", "date", "type", "read"};
-            String address = "address=\'" + message.getSenderNumber() + "\'";
-            Log.d(TAG, "getMessages: " + address);
-            Cursor cur = getActivity().getContentResolver().query(uri, projection, address, null, "date desc");
-            assert cur != null;
-            if (cur.moveToFirst()) {
-                int index_Address = cur.getColumnIndex("address");
-//                int index_Person = cur.getColumnIndex("person");
-                int index_Date = cur.getColumnIndex("date");
-                int index_Body = cur.getColumnIndex("body");
-                int index_Type = cur.getColumnIndex("type");
-                int index_Read = cur.getColumnIndex("read");
-                do {
-                    String strAddress = cur.getString(index_Address);
-//                    String intPerson = cur.getString(index_Person);
-                    String strbody = cur.getString(index_Body);
-                    String longDate = cur.getString(index_Date);
-                    String int_Type = cur.getString(index_Type);
-                    String read = cur.getString(index_Read);
 
-                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type, strAddress, read);
-                    messagesList.add(sms);
-                } while (cur.moveToNext());
-                mAdapter.notifyDataSetChanged();
-                if (!cur.isClosed()) {
-                    cur.close();
-                }
-            }
+            DatabaseHandler db = new DatabaseHandler(getActivity().getApplicationContext());
+            List<SMS> list = new ArrayList<>();
+            String senderAddress = message.getSenderNumber();
+            senderAddress = senderAddress.startsWith("+91") ? senderAddress.substring(3) : senderAddress;
+            list = db.getAllMessages(senderAddress);
+            messagesList.addAll(list);
+            Log.d(TAG, "getMessages: " + messagesList.size());
+            mAdapter.notifyDataSetChanged();
+            //Reading all the messages from inbox
+//            Uri uri = Uri.parse(SMS_URI_INBOX);
+//            String[] projection = new String[]{"_id", "address", "person", "body", "date", "type", "read"};
+//            String address = "address=\'" + message.getSenderNumber() + "\'";
+//            Log.d(TAG, "getMessages: " + address);
+//            Cursor cur = getActivity().getContentResolver().query(uri, projection, address, null, "date desc");
+//            assert cur != null;
+//            if (cur.moveToFirst()) {
+//                int index_Address = cur.getColumnIndex("address");
+////                int index_Person = cur.getColumnIndex("person");
+//                int index_Date = cur.getColumnIndex("date");
+//                int index_Body = cur.getColumnIndex("body");
+//                int index_Type = cur.getColumnIndex("type");
+//                int index_Read = cur.getColumnIndex("read");
+//                do {
+//                    String strAddress = cur.getString(index_Address);
+////                    String intPerson = cur.getString(index_Person);
+//                    String strbody = cur.getString(index_Body);
+//                    String longDate = cur.getString(index_Date);
+//                    String int_Type = cur.getString(index_Type);
+//                    String read = cur.getString(index_Read);
+//
+//                    SMS sms = new SMS(strAddress, longDate, strbody, int_Type, strAddress, read, "false");
+//                    messagesList.add(sms);
+//                } while (cur.moveToNext());
+//                if (!cur.isClosed()) {
+//                    cur.close();
+//                }
+//
+//            }
         } catch (SQLiteException ex) {
             Log.d("SQLiteException", ex.getMessage());
         }

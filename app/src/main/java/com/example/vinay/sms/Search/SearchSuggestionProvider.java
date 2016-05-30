@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.vinay.sms.Utilities.DatabaseHandler;
 
@@ -33,19 +34,21 @@ public class SearchSuggestionProvider extends ContentProvider {
                 new String[]{
                         BaseColumns._ID,
                         SearchManager.SUGGEST_COLUMN_TEXT_1,
-                        SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID
+                        SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
+                        SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA
                 }
         );
 
         if (cities != null) {
             String query = uri.getLastPathSegment().toUpperCase();
+            Log.d("TAG", "queryUri: " + uri);
             int limit = Integer.parseInt(uri.getQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT));
 
             int length = cities.size();
             for (int i = 0; i < length && cursor.getCount() < limit; i++) {
                 String city = cities.get(i);
                 if (city.toUpperCase().contains(query)) {
-                    cursor.addRow(new Object[]{i, city, i});
+                    cursor.addRow(new Object[]{i, city, i, query});
                 }
             }
         }

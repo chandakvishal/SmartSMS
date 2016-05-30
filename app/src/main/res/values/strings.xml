@@ -4,4 +4,5 @@
     <string name="search">Search</string>
     <string name="select_contact">Select Contact</string>
     <string name="write_message">Write Message</string>
+    <string name="google_drive_backup">Google Drive Backup</string>
 </resources>

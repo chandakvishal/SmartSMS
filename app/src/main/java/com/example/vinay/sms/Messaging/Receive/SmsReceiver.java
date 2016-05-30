@@ -72,7 +72,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
                         Log.d(TAG, "onReceive: " + msg_from + "::" + msgBody);
 
-                        SMS m = new SMS(msg_from, time, msgBody, "1", msg_from, read);
+                        SMS m = new SMS(msg_from, time, msgBody, "1", msg_from, read, "false");
 
                         String address = smsDisplayFragment.getSenderNumber(msg_from);
 
