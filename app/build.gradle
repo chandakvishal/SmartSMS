@@ -11,6 +11,18 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    sourceSets {
+        main {
+            res.srcDirs =
+                    [
+                            'src/main/res/layouts/activities',
+                            'src/main/res/layouts/fragments',
+                            'src/main/res/layouts/helper',
+                            'src/main/res/layouts',
+                            'src/main/res'
+                    ]
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false

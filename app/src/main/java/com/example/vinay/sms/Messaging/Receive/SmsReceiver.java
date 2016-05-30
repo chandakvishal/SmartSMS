@@ -1,4 +1,4 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Messaging.Receive;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,6 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+
+import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
+import com.example.vinay.sms.R;
+import com.example.vinay.sms.Messaging.SMS;
 
 import java.util.ArrayList;
 
@@ -43,7 +47,7 @@ public class SmsReceiver extends BroadcastReceiver {
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
 
-        Uri soundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             Bundle bundle = intent.getExtras();

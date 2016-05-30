@@ -10,8 +10,8 @@
     <item
         android:id="@+id/album_overflow_share"
         android:icon="@drawable/no"
-        tools:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        android:title="share" />
+        android:title="share"
+        tools:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
 
     <item
         android:id="@+id/album_overflow_delete"

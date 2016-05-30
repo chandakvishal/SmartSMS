@@ -1,4 +1,4 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.vinay.sms.R;
+import com.example.vinay.sms.Messaging.SMS;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

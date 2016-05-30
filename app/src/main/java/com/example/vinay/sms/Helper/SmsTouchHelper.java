@@ -1,7 +1,9 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Helper;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+
+import com.example.vinay.sms.Adapter.SmsAdapter;
 
 public class SmsTouchHelper extends ItemTouchHelper.SimpleCallback {
     private SmsAdapter smsAdapter;

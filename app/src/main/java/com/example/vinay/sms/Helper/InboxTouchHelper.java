@@ -1,15 +1,17 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Helper;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+
+import com.example.vinay.sms.Adapter.InboxAdapter;
 
 public class InboxTouchHelper extends ItemTouchHelper.SimpleCallback {
     private InboxAdapter inboxAdapterAdapter;
     private RecyclerView recyclerView;
 
-    public InboxTouchHelper(InboxAdapter movieAdapter, RecyclerView recyclerView) {
+    public InboxTouchHelper(InboxAdapter messageAdapter, RecyclerView recyclerView) {
         super(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
-        this.inboxAdapterAdapter = movieAdapter;
+        this.inboxAdapterAdapter = messageAdapter;
         this.recyclerView = recyclerView;
     }
 

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SMS</string>
     <string name="send_button">send_button</string>
+    <string name="search">Search</string>
+    <string name="select_contact">Select Contact</string>
+    <string name="write_message">Write Message</string>
 </resources>

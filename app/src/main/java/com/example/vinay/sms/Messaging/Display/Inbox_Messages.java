@@ -1,5 +1,11 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Messaging.Display;
 
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -19,7 +25,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.vinay.sms.Adapter.InboxAdapter;
+import com.example.vinay.sms.Helper.InboxTouchHelper;
+import com.example.vinay.sms.MainActivity;
+import com.example.vinay.sms.R;
+import com.example.vinay.sms.Messaging.SMS;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.DividerItemDecoration;
 
@@ -148,17 +160,66 @@ public class Inbox_Messages extends BackHandledFragment {
         Inbox_Messages.message = message;
     }
 
-    public void sendMessage(String destination, String message) {
-        try {
-            SmsManager smsManager = SmsManager.getDefault();
-            Log.d("TAG", "sendMessage: MESSAGE: " + message);
-            ArrayList<String> messageParts = smsManager.divideMessage(message);
-            Log.d("TAG", "sendMessage: SIZE: " + messageParts.size());
-            smsManager.sendMultipartTextMessage(destination, null, messageParts, null, null);
-            snackbar.show();
-        } catch (Exception e) {
-            snackbar.setText("SMS failed, please try again.").show();
-            e.printStackTrace();
-        }
+    public void sendMessage(String phoneNumber, String message) {
+        Log.d(TAG, "sendSMS: SENT TO:" + phoneNumber);
+
+
+        String SENT = "SMS_SENT";
+        String DELIVERED = "SMS_DELIVERED";
+
+        PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
+                new Intent(SENT), 0);
+
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(getActivity(), 0,
+                new Intent(DELIVERED), 0);
+
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+
+        //---when the SMS has been sent---
+        getActivity().registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode()) {
+                    case Activity.RESULT_OK:
+                        Toast.makeText(getActivity().getBaseContext(), "SMS sent",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                        Toast.makeText(getActivity().getBaseContext(), "Generic failure",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+                        Toast.makeText(getActivity().getBaseContext(), "No service",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NULL_PDU:
+                        Toast.makeText(getActivity().getBaseContext(), "Null PDU",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+                        Toast.makeText(getActivity().getBaseContext(), "Radio off",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(SENT));
+
+        //---when the SMS has been delivered---
+        getActivity().registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode()) {
+                    case Activity.RESULT_OK:
+                        Toast.makeText(getActivity().getBaseContext(), "SMS delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Toast.makeText(getActivity().getBaseContext(), "SMS not delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(DELIVERED));
     }
 }

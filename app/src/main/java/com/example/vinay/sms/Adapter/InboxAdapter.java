@@ -1,4 +1,4 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.vinay.sms.R;
+import com.example.vinay.sms.Messaging.SMS;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -44,13 +47,10 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
-        Log.d("TAG", "onBindViewHolder: " + smsList.size());
         SimpleDateFormat ft = new SimpleDateFormat("E yyyy.MM.dd");
         holder.time.setText(ft.format(Long.parseLong(smsList.get(position).date)));
         String message = String.valueOf(smsList.get(position).message);
         holder.message.setText(message);
-
     }
 
     @Override

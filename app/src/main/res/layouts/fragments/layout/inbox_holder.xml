@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/coordinatorLayout"
     android:orientation="vertical">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,9 +29,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="5"
-                android:maxLines="10"
                 android:gravity="top|start"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
+                android:maxLines="10"
                 android:scrollHorizontally="false" />
 
             <ImageButton
@@ -42,8 +42,8 @@
                 android:background="#00FFFFFF"
                 android:contentDescription="@string/send_button"
                 android:gravity="center"
-                android:src="@drawable/ic_send_black_36dp"
-                android:paddingRight="5dp" />
+                android:paddingRight="5dp"
+                android:src="@drawable/ic_send_black_36dp" />
         </LinearLayout>
 
     </RelativeLayout>

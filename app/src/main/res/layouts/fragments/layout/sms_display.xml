@@ -15,14 +15,14 @@
             android:scrollbars="vertical" />
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/sendMessageFloatingButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:src="@drawable/ic_plus"
-            android:id="@+id/sendMessageFloatingButton"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:paddingBottom="20dp"
+            android:src="@drawable/ic_plus" />
 
     </RelativeLayout>
 

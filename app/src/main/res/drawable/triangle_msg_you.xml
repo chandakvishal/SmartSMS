@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item  android:state_pressed="true" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
         <rotate
             android:fromDegrees="45"
-            android:toDegrees="45"
             android:pivotX="13%"
-            android:pivotY="-40%" >
-            <shape
-                android:shape="rectangle" >
-                <stroke android:color="#007AE5" android:width="10dp"/>
+            android:pivotY="-40%"
+            android:toDegrees="45">
+            <shape android:shape="rectangle">
+                <stroke
+                    android:width="10dp"
+                    android:color="#007AE5" />
             </shape>
         </rotate>
 
@@ -16,12 +17,13 @@
     <item>
         <rotate
             android:fromDegrees="45"
-            android:toDegrees="45"
             android:pivotX="13%"
-            android:pivotY="-40%" >
-            <shape
-                android:shape="rectangle" >
-                <stroke android:color="#0084FF" android:width="10dp"/>
+            android:pivotY="-40%"
+            android:toDegrees="45">
+            <shape android:shape="rectangle">
+                <stroke
+                    android:width="10dp"
+                    android:color="#0084FF" />
 
             </shape>
         </rotate>

@@ -1,4 +1,4 @@
-package com.example.vinay.sms;
+package com.example.vinay.sms.Dummy;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

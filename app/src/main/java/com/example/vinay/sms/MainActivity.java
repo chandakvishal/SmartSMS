@@ -1,26 +1,36 @@
 package com.example.vinay.sms;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
+import com.example.vinay.sms.Search.SearchableActivity;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
+import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
-        BackHandledFragment.BackHandlerInterface {
+        BackHandledFragment.BackHandlerInterface, SearchView.OnQueryTextListener {
 
     private final String TAG = this.getClass().getSimpleName();
+
     ArrayList<String> smsMessagesList = new ArrayList<>();
-    ListView smsListView;
+
     private BackHandledFragment selectedFragment;
 
     @Override
@@ -46,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.main_fragment);
         assert frameLayout != null;
         frameLayout.getForeground().setAlpha(0);
-
-        smsListView = (ListView) findViewById(R.id.SMSList);
 
         if (savedInstanceState == null)
             changeFragment(new SmsDisplayFragment(), "smsDisplayFragment");
@@ -97,10 +105,49 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onBackPressed() {
-
         if (selectedFragment == null || !selectedFragment.onBackPressed()) {
             // Selected fragment did not consume the back press event.
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        db.resetUserTables();
+        db.deleteDatabase(getApplicationContext());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(
+                new ComponentName(this, MainActivity.class)));
+        searchView.setIconifiedByDefault(false);
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(
+                new ComponentName(this, SearchableActivity.class)));
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // User pressed the search button
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        return false;
     }
 }
