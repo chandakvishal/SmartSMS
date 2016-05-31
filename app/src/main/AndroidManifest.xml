@@ -85,6 +85,13 @@
                 android:resource="@xml/searchable" />
         </activity>
 
+        <activity android:name="com.onegravity.contactpicker.core.ContactPickerActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- DARK Theme -->
+    <style name="Theme_Dark" parent="@style/ContactPicker_Theme_Dark">
+        <!-- ActionBarCompat (these override the default colors of the ContactPicker -->
+        <item name="colorPrimary">@color/colorPrimary_dark</item>
+        <item name="colorAccent">@color/colorAccent_dark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_dark</item>
+
+        <item name="backgroundColor">@color/Gray</item>
+        <item name="icTheme">@drawable/ic_check_white_36dp</item>
+        <item name="icPickContact">@drawable/ic_plus</item>
+    </style>
+
+</resources>

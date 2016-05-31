@@ -1,6 +1,7 @@
 package com.example.vinay.sms.Messaging.Display;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.vinay.sms.Adapter.SmsAdapter;
@@ -39,25 +41,25 @@ import java.util.List;
 
 public class SmsDisplayFragment extends BackHandledFragment {
 
-    SmsAdapter mAdapter;
+    private SmsAdapter mAdapter;
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private static List<SMS> smsList = new ArrayList<>();
+    private static final List<SMS> smsList = new ArrayList<>();
 
-    private static LinkedHashSet<SMS> linkedHashSet = new LinkedHashSet<>();
+    private static final LinkedHashSet<SMS> linkedHashSet = new LinkedHashSet<>();
 
-    private static LinkedHashSet<SMS> uniquelinkedHashSet = new LinkedHashSet<>();
+    private static final LinkedHashSet<SMS> uniquelinkedHashSet = new LinkedHashSet<>();
 
-    HashMap<String, String> contactsStored = new HashMap<>();
+    private final HashMap<String, String> contactsStored = new HashMap<>();
 
-    Inbox_Messages inbox_messages = new Inbox_Messages();
+    private final Inbox_Messages inbox_messages = new Inbox_Messages();
 
     private Boolean exit = false;
 
     private static final String TABLE_INBOX = "_INBOX";
 
-    DatabaseHandler db;
+    private DatabaseHandler db;
 
 
     @SuppressWarnings("ConstantConditions")
@@ -87,6 +89,9 @@ public class SmsDisplayFragment extends BackHandledFragment {
             }
 
         });
+
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(parentView.getWindowToken(), 0);
 
         //Floating Action Button Menu Configuration
 
@@ -140,7 +145,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
         return true;
     }
 
-    public void getMessages() {
+    private void getMessages() {
         Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
 
         Cursor cursor1 = getActivity().getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type", "read"}, null, null, null);
@@ -244,7 +249,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void storeContacts() {
+    private void storeContacts() {
         Cursor cursor = getActivity().getContentResolver().query
                 (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         assert cursor != null;
@@ -259,7 +264,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
         cursor.close();
     }
 
-    public String getContactName(String number) {
+    private String getContactName(String number) {
 
         String name = null;
 

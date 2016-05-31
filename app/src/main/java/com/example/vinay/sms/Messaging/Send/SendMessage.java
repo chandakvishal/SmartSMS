@@ -1,16 +1,21 @@
 package com.example.vinay.sms.Messaging.Send;
 
+import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
@@ -20,23 +25,33 @@ import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
+import com.onegravity.contactpicker.contact.Contact;
+import com.onegravity.contactpicker.contact.ContactDescription;
+import com.onegravity.contactpicker.contact.ContactSortOrder;
+import com.onegravity.contactpicker.core.ContactPickerActivity;
+import com.onegravity.contactpicker.picture.ContactPictureType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SendMessage extends BackHandledFragment {
 
-//    private String TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivity.class.getSimpleName();
 
     private MultiAutoCompleteTextView txtPhoneNumber;
 
-    private ArrayList<String> contactNameList = new ArrayList<>();
+    private static final int REQUEST_CONTACT = 0;
 
-    private ArrayList<String> contactNumberList = new ArrayList<>();
+    private final ArrayList<String> contactNameList = new ArrayList<>();
 
-    private HashMap<String, String> nameToNumberMap = new HashMap<>();
+    private final ArrayList<String> contactNumberList = new ArrayList<>();
 
-    SendSms sendSMS = new SendSms();
+    private final HashMap<String, String> nameToNumberMap = new HashMap<>();
+
+    private List<Contact> mContacts;
+
+    private final SendSms sendSMS = new SendSms();
 
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
@@ -54,6 +69,12 @@ public class SendMessage extends BackHandledFragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Send Message");
 
         txtPhoneNumber = (MultiAutoCompleteTextView) parentView.findViewById(R.id.txtPhoneNumber);
+
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
 
         final EditText messageText = (EditText) parentView.findViewById(R.id.messageSendInbox);
 
@@ -78,6 +99,29 @@ public class SendMessage extends BackHandledFragment {
                 }
             }
         });
+
+        parentView.findViewById(R.id.get_contacts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ContactPickerActivity.class)
+                        .putExtra(ContactPickerActivity.EXTRA_THEME, "dark")
+
+                        .putExtra(ContactPickerActivity.EXTRA_CONTACT_BADGE_TYPE,
+                                ContactPictureType.ROUND.name())
+
+                        .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION,
+                                ContactDescription.ADDRESS.name())
+
+                        .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE,
+                                ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+
+                        .putExtra(ContactPickerActivity.EXTRA_CONTACT_SORT_ORDER,
+                                ContactSortOrder.AUTOMATIC.name());
+
+                startActivityForResult(intent, REQUEST_CONTACT);
+            }
+        });
+
 
         final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) parentView.findViewById(R.id
                 .coordinatorLayout);
@@ -122,6 +166,30 @@ public class SendMessage extends BackHandledFragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CONTACT && resultCode == Activity.RESULT_OK &&
+                data != null && data.hasExtra(ContactPickerActivity.RESULT_CONTACT_DATA)) {
+
+            // we got a result from the contact picker --> show the picked contacts
+            mContacts = (List<Contact>) data.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA);
+            populateContactList(mContacts);
+        }
+    }
+
+    private void populateContactList(List<Contact> contacts) {
+        if (contacts == null || mContacts.isEmpty()) return;
+
+        // we got a result from the contact picker --> show the picked contacts
+        String displayName = "";
+        for (Contact contact : contacts) {
+            displayName = displayName + contact.getDisplayName() + ",";
+        }
+        Log.d(TAG, "populateContactList: " + displayName);
+        txtPhoneNumber.setText(displayName);
+    }
+
+
+    @Override
     public boolean onBackPressed() {
         ((MainActivity) getActivity()).changeFragment(new SmsDisplayFragment(), "home", R.anim.enter_anim, R.anim.exit_anim);
         return true;
@@ -131,6 +199,9 @@ public class SendMessage extends BackHandledFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            //noinspection ConstantConditions
+            imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
             onBackPressed();
             return true;
         }

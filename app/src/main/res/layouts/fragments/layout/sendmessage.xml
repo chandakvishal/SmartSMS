@@ -14,18 +14,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:background="@color/LightBlue">
+            android:background="@color/LightBlue"
+            android:padding="10dp">
+
+            <ImageButton
+                android:id="@+id/get_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:layout_gravity="center"
+                android:contentDescription="@string/contacts_button"
+                android:src="@drawable/ic_contacts" />
 
             <MultiAutoCompleteTextView
                 android:id="@+id/txtPhoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/edittextstyle"
                 android:focusableInTouchMode="true"
                 android:hint="@string/select_contact"
                 android:imeOptions="actionDone"
-                android:padding="10dp"
-                android:background="@drawable/edittextstyle"/>
+                android:padding="10dp" />
 
         </LinearLayout>
 
@@ -34,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@color/White"
+            android:padding="5dp"
             android:orientation="horizontal">
 
             <EditText
@@ -44,6 +53,7 @@
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="5"
                 android:gravity="top|start"
+                android:padding="10dp"
                 android:hint="@string/write_message"
                 android:imeOptions="actionSend|flagNoEnterAction"
                 android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
