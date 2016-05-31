@@ -8,15 +8,26 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/LightCyan">
 
-        <MultiAutoCompleteTextView
-            android:id="@+id/txtPhoneNumber"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:hint="@string/select_contact"
-            android:imeOptions="actionDone" />
+            android:padding="10dp"
+            android:background="@color/LightBlue">
+
+            <MultiAutoCompleteTextView
+                android:id="@+id/txtPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="@string/select_contact"
+                android:imeOptions="actionDone"
+                android:padding="10dp"
+                android:background="@drawable/edittextstyle"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_send_message"

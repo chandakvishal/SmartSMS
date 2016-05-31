@@ -1,5 +1,6 @@
 package com.example.vinay.sms.Adapter;
 
+import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,9 +30,17 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.inbox_rows, parent, false);
-        return new MyViewHolder(itemView);
+        View itemViewReceived = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.inbox_row_received, parent, false);
+        View itemViewSent = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.inbox_row_sent, parent, false);
+        switch (viewType) {
+            case 0:
+                return new MyViewHolder(itemViewReceived);
+            case 1:
+                return new MyViewHolder(itemViewSent);
+        }
+        return new MyViewHolder(itemViewReceived);
     }
 
     @Override
@@ -40,11 +49,22 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
         holder.time.setText(ft.format(Long.parseLong(smsList.get(position).date)));
         String message = String.valueOf(smsList.get(position).message);
         holder.message.setText(message);
+        if ("true".equals(smsList.get(position).isSentStatus())) {
+            holder.itemView.setBackgroundColor(Color.CYAN);
+        }
     }
 
     @Override
     public int getItemCount() {
         return smsList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if ("true".equals(smsList.get(position).isSentStatus())) {
+            return 1;
+        }
+        return 0;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

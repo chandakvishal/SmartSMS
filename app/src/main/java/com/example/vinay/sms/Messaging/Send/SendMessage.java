@@ -1,22 +1,12 @@
 package com.example.vinay.sms.Messaging.Send;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,21 +15,18 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
-import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SendMessage extends BackHandledFragment {
 
-    private static final String TABLE_SENT = "_SENT";
-    private String TAG = MainActivity.class.getSimpleName();
+//    private String TAG = MainActivity.class.getSimpleName();
 
     private MultiAutoCompleteTextView txtPhoneNumber;
 
@@ -48,6 +35,8 @@ public class SendMessage extends BackHandledFragment {
     private ArrayList<String> contactNumberList = new ArrayList<>();
 
     private HashMap<String, String> nameToNumberMap = new HashMap<>();
+
+    SendSms sendSMS = new SendSms();
 
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
@@ -81,8 +70,10 @@ public class SendMessage extends BackHandledFragment {
                         if (phoneNumber == null) {
                             phoneNumber = dest;
                         }
-                        phoneNumber = phoneNumber.replaceAll("\\D+","");
-                        sendSMS(phoneNumber, messageToSend);
+                        phoneNumber = phoneNumber.replaceAll("\\D+", "");
+                        phoneNumber = phoneNumber.startsWith("91") ? phoneNumber.substring(2)
+                                : phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber;
+                        sendSMS.sendSMS(phoneNumber, messageToSend, getActivity());
                     }
                 }
             }
@@ -128,92 +119,6 @@ public class SendMessage extends BackHandledFragment {
             txtPhoneNumber.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
         return parentView;
-    }
-
-    //---sends an SMS message to another device---
-    private void sendSMS(final String phoneNumber, final String message) {
-
-        Log.d(TAG, "sendSMS: SENT TO:" + phoneNumber);
-
-        final DatabaseHandler db = new DatabaseHandler(getActivity().getApplicationContext());
-
-        String SENT = "SMS_SENT";
-        String DELIVERED = "SMS_DELIVERED";
-
-        PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
-                new Intent(SENT), 0);
-
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(getActivity(), 0,
-                new Intent(DELIVERED), 0);
-
-        SmsManager sms = SmsManager.getDefault();
-        Log.d(TAG, "sendSMS: Phone Number:" + phoneNumber);
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
-
-        //---when the SMS has been sent---
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-
-                        Log.d(TAG, "sendSMS: SENT TO OK:" + phoneNumber);
-
-                        ContentValues values = new ContentValues();
-
-                        String date = String.valueOf(System.currentTimeMillis());
-
-                        values.put("address", phoneNumber);//sender name
-                        values.put("body", message);
-                        values.put("date", date);
-
-                        getActivity().getContentResolver().insert(Uri.parse("content://sms/sent"), values);
-                        String tempPhoneNumber = phoneNumber.replaceAll("\\D+","");
-                        db.addUser(tempPhoneNumber, date, message, null, phoneNumber, null, "true", TABLE_SENT);
-                        Toast.makeText(getActivity().getBaseContext(), "SMS sent",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        Toast.makeText(getActivity().getBaseContext(), "Generic failure",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        Toast.makeText(getActivity().getBaseContext(), "No service",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_NULL_PDU:
-                        Toast.makeText(getActivity().getBaseContext(), "Null PDU",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        Toast.makeText(getActivity().getBaseContext(), "Radio off",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        }, new IntentFilter(SENT));
-
-        //---when the SMS has been delivered---
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-                        Log.d(TAG, "sendSMS: SENT TO OHK:" + phoneNumber);
-
-                        Toast.makeText(getActivity().getBaseContext(), "SMS delivered",
-                                Toast.LENGTH_SHORT).show();
-
-
-
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        Toast.makeText(getActivity().getBaseContext(), "SMS not delivered",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        }, new IntentFilter(DELIVERED));
     }
 
     @Override

@@ -1,11 +1,5 @@
 package com.example.vinay.sms.Messaging.Display;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,23 +7,21 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.vinay.sms.Adapter.InboxAdapter;
 import com.example.vinay.sms.Helper.InboxTouchHelper;
 import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.SMS;
+import com.example.vinay.sms.Messaging.Send.SendSms;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
-import com.example.vinay.sms.Utilities.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +36,14 @@ public class Inbox_Messages extends BackHandledFragment {
 
     private static SMS message;
 
+    SendSms sendSMS = new SendSms();
+
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.inbox_holder, container, false);
 
-        final String destination = message.getSenderAddress();
+        final String destination = message.getSenderNumber();
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_inbox);
 
@@ -57,7 +51,7 @@ public class Inbox_Messages extends BackHandledFragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(destination);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(message.getSenderAddress());
 
         setHasOptionsMenu(true);
 
@@ -67,7 +61,11 @@ public class Inbox_Messages extends BackHandledFragment {
             @Override
             public void onClick(View v) {
                 final String messageToSend = String.valueOf(messageText.getText());
-                sendMessage(destination, messageToSend);
+                Log.d(TAG, "onClick: " + destination);
+                String phoneNumber = destination.replaceAll("\\D+", "");
+                phoneNumber = phoneNumber.startsWith("91") ? phoneNumber.substring(2)
+                        : phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber;
+                sendSMS.sendSMS(phoneNumber, messageToSend, getActivity());
             }
         });
 
@@ -75,7 +73,6 @@ public class Inbox_Messages extends BackHandledFragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.Callback callback = new InboxTouchHelper(mAdapter, recyclerView);
@@ -123,66 +120,66 @@ public class Inbox_Messages extends BackHandledFragment {
         Inbox_Messages.message = message;
     }
 
-    public void sendMessage(String phoneNumber, String message) {
-        Log.d(TAG, "sendSMS: SENT TO:" + phoneNumber);
-
-
-        String SENT = "SMS_SENT";
-        String DELIVERED = "SMS_DELIVERED";
-
-        PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
-                new Intent(SENT), 0);
-
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(getActivity(), 0,
-                new Intent(DELIVERED), 0);
-
-        SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
-
-        //---when the SMS has been sent---
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-                        Toast.makeText(getActivity().getBaseContext(), "SMS sent",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        Toast.makeText(getActivity().getBaseContext(), "Generic failure",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        Toast.makeText(getActivity().getBaseContext(), "No service",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_NULL_PDU:
-                        Toast.makeText(getActivity().getBaseContext(), "Null PDU",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        Toast.makeText(getActivity().getBaseContext(), "Radio off",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        }, new IntentFilter(SENT));
-
-        //---when the SMS has been delivered---
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-                        Toast.makeText(getActivity().getBaseContext(), "SMS delivered",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        Toast.makeText(getActivity().getBaseContext(), "SMS not delivered",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        }, new IntentFilter(DELIVERED));
-    }
+//    public void sendMessage(String phoneNumber, String message) {
+//        Log.d(TAG, "sendSMS: SENT TO:" + phoneNumber);
+//
+//
+//        String SENT = "SMS_SENT";
+//        String DELIVERED = "SMS_DELIVERED";
+//
+//        PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
+//                new Intent(SENT), 0);
+//
+//        PendingIntent deliveredPI = PendingIntent.getBroadcast(getActivity(), 0,
+//                new Intent(DELIVERED), 0);
+//
+//        SmsManager sms = SmsManager.getDefault();
+//        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+//
+//        //---when the SMS has been sent---
+//        getActivity().registerReceiver(new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context arg0, Intent arg1) {
+//                switch (getResultCode()) {
+//                    case Activity.RESULT_OK:
+//                        Toast.makeText(getActivity().getBaseContext(), "SMS sent",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+//                        Toast.makeText(getActivity().getBaseContext(), "Generic failure",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+//                        Toast.makeText(getActivity().getBaseContext(), "No service",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                    case SmsManager.RESULT_ERROR_NULL_PDU:
+//                        Toast.makeText(getActivity().getBaseContext(), "Null PDU",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+//                        Toast.makeText(getActivity().getBaseContext(), "Radio off",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                }
+//            }
+//        }, new IntentFilter(SENT));
+//
+//        //---when the SMS has been delivered---
+//        getActivity().registerReceiver(new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context arg0, Intent arg1) {
+//                switch (getResultCode()) {
+//                    case Activity.RESULT_OK:
+//                        Toast.makeText(getActivity().getBaseContext(), "SMS delivered",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                    case Activity.RESULT_CANCELED:
+//                        Toast.makeText(getActivity().getBaseContext(), "SMS not delivered",
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                }
+//            }
+//        }, new IntentFilter(DELIVERED));
+//    }
 }

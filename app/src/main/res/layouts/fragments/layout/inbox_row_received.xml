@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="10dp"
     android:orientation="horizontal">
 
     <TableRow
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:background="#8CFFFFFF"
+        android:background="@drawable/round_corner_received"
         android:padding="10dp">
 
         <TextView
@@ -18,21 +19,24 @@
             android:autoLink="all"
             android:minHeight="48dp"
             android:paddingBottom="20dp"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textIsSelectable="true"
             android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/timeStamp"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:gravity="left"
-            android:paddingLeft="20dp"
-            android:paddingTop="15dp"
-            android:textSize="12sp"
-            android:textStyle="italic" />
-
     </TableRow>
+
+    <TextView
+        android:id="@+id/timeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="15dp"
+        android:textSize="12sp"
+        android:gravity="end"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textStyle="italic" />
 
 </RelativeLayout>
