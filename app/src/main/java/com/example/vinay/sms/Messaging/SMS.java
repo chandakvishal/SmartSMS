@@ -12,12 +12,12 @@ public class SMS {
 
     /**
      * @param senderAddress address of the sender
-     * @param date date the Message was received
-     * @param message the Actual Body of the Message
-     * @param type type of the message
-     * @param senderNumber number of the sender
-     * @param readStatus read status of the message
-     * @param sentStatus true indicates message was sent, false indicates message was received
+     * @param date          date the Message was received
+     * @param message       the Actual Body of the Message
+     * @param type          type of the message
+     * @param senderNumber  number of the sender
+     * @param readStatus    read status of the message
+     * @param sentStatus    true indicates message was sent, false indicates message was received
      */
     public SMS(String senderAddress, String date, String message,
                String type, String senderNumber, String readStatus, String sentStatus) {
@@ -86,7 +86,7 @@ public class SMS {
         this.date = date;
     }
 
-    public String isSentStatus() {
+    public String getSentStatus() {
         return sentStatus;
     }
 

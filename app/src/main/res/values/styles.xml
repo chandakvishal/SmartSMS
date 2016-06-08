@@ -2,18 +2,100 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/SteelBlue</item>
-        <item name="colorPrimaryDark">@color/SteelBlue</item>
-        <item name="colorAccent">@color/CornflowerBlue</item>
+        <item name="colorPrimary">@color/Wheat</item>
+        <item name="colorPrimaryDark">@color/White</item>
+        <item name="colorAccent">@color/Bisque</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="ToolBarStyle">@style/ToolBarStyleLight</item>
+        <item name="MyCustomTabLayout">@style/MyCustomTabLayoutLight</item>
+        <item name="ic_call">@drawable/ic_call_black_48dp</item>
+        <item name="ic_search">@drawable/ic_search_black_36dp</item>
+        <item name="ic_send">@drawable/ic_send_black_48dp</item>
+        <item name="ic_arrow">@drawable/ic_arrow_back_black_48dp</item>
+        <item name="ic_contacts">@drawable/ic_contacts_black_48dp</item>
+        <item name="ic_plus">@drawable/ic_add_black_48dp</item>
 
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:colorBackground">@color/SteelBlue</item>
+    <style name="AppThemeDark" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/Black</item>
+        <item name="colorPrimaryDark">@color/Black</item>
+        <item name="colorAccent">@color/Black</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="ToolBarStyle">@style/ToolBarStyleDark</item>
+        <item name="MyCustomTabLayout">@style/MyCustomTabLayoutDark</item>
+        <item name="ic_call">@drawable/ic_call_white_48dp</item>
+        <item name="ic_search">@drawable/ic_search_white_36dp</item>
+        <item name="ic_send">@drawable/ic_send_white_48dp</item>
+        <item name="ic_arrow">@drawable/ic_arrow_back_white_48dp</item>
+        <item name="ic_contacts">@drawable/ic_contacts_white_48dp</item>
+        <item name="ic_plus">@drawable/ic_add_white_48dp</item>
+    </style>
 
+    <!--Toolbar Attributes-->
+    <attr name="ToolBarStyle" format="reference" />
+
+    <style name="ToolBarStyleDark" parent="Theme.AppCompat">
+        <item name="android:background">@color/Black</item>
+        <item name="android:colorBackground">@color/Black</item>
+        <item name="android:textColorPrimary">@color/White</item>
+        <item name="android:textColorSecondary">@color/White</item>
+        <item name="android:textColor">@color/White</item>
+        <item name="android:actionMenuTextColor">@color/White</item>
+    </style>
+
+    <style name="ToolBarStyleLight" parent="Theme.AppCompat">
+        <item name="android:background">@color/Wheat</item>
+        <item name="android:colorBackground">@color/Bisque</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+        <item name="android:textColorSecondary">@android:color/black</item>
+    </style>
+
+    <!--Icon Attributes-->
+    <attr name="ic_call" format="reference" />
+    <attr name="ic_search" format="reference" />
+    <attr name="ic_send" format="reference" />
+    <attr name="ic_arrow" format="reference" />
+    <attr name="ic_plus" format="reference" />
+    <attr name="ic_contacts" format="reference" />
+
+    <!--Tab Attributes-->
+    <attr name="MyCustomTabLayout" format="reference" />
+
+    <style name="MyCustomTabLayoutLight" parent="Widget.Design.TabLayout">
+        <item name="tabMaxWidth">@dimen/tab_max_width</item>
+        <item name="tabIndicatorColor">@color/LightSkyBlue</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabPaddingStart">12dp</item>
+        <item name="tabPaddingEnd">12dp</item>
+        <item name="tabBackground">?attr/selectableItemBackground</item>
+        <item name="tabTextAppearance">@style/MyCustomTabTextAppearanceLight</item>
+        <item name="tabSelectedTextColor">@color/Black</item>
+    </style>
+
+    <style name="MyCustomTabTextAppearanceLight" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/Gray</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+    <style name="MyCustomTabLayoutDark" parent="Widget.Design.TabLayout">
+        <item name="tabMaxWidth">@dimen/tab_max_width</item>
+        <item name="tabIndicatorColor">@color/Bisque</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabPaddingStart">12dp</item>
+        <item name="tabPaddingEnd">12dp</item>
+        <item name="tabBackground">@color/Black</item>
+        <item name="tabTextAppearance">@style/MyCustomTabTextAppearanceDark</item>
+        <item name="tabSelectedTextColor">@color/Wheat</item>
+    </style>
+
+    <style name="MyCustomTabTextAppearanceDark" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/LightGrey</item>
+        <item name="textAllCaps">true</item>
     </style>
 
     <style name="checkBoxStyle" parent="Base.Theme.AppCompat">

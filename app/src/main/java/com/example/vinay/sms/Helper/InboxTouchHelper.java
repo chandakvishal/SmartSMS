@@ -10,7 +10,7 @@ public class InboxTouchHelper extends ItemTouchHelper.SimpleCallback {
     private RecyclerView recyclerView;
 
     public InboxTouchHelper(InboxAdapter messageAdapter, RecyclerView recyclerView) {
-        super(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+        super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.inboxAdapterAdapter = messageAdapter;
         this.recyclerView = recyclerView;
     }

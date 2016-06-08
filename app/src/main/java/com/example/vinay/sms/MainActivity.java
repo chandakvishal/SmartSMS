@@ -4,77 +4,78 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.example.vinay.sms.Adapter.ViewPagerAdapter;
+import com.example.vinay.sms.Messaging.Display.SentMessageDisplay;
 import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
+import com.example.vinay.sms.Messaging.Send.SendMessage;
 import com.example.vinay.sms.Search.SearchableActivity;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 
-import java.util.Arrays;
-
-public class MainActivity extends AppCompatActivity implements BackHandledFragment.BackHandlerInterface, SearchView.OnQueryTextListener {
-
-    private final String TAG = this.getClass().getSimpleName();
+public class MainActivity extends AppCompatActivity
+        implements BackHandledFragment.BackHandlerInterface, SearchView.OnQueryTextListener {
 
     private SearchView searchView;
 
-//    ArrayList<String> smsMessagesList = new ArrayList<>();
-
     private BackHandledFragment selectedFragment;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
+    TabLayout tabLayout;
+
+    public static CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        SharedPreferences pref = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        boolean isDark = pref.getBoolean("isDark", true);
+        if (isDark) {
+            setTheme(R.style.AppThemeDark);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
+
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        assert tabLayout != null;
+        tabLayout.setupWithViewPager(viewPager);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setElevation(15.0f);
         }
 
-        if (savedInstanceState == null)
-            changeFragment(new SmsDisplayFragment(), "smsDisplayFragment");
-    }
+        FloatingActionButton sendMessageFloatingButton = (FloatingActionButton) findViewById(R.id.sendMessageFloatingButton);
 
-    public void changeFragment(Fragment targetFragment, String tag) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.animation2, R.anim.animation4)
-                .replace(R.id.main_fragment, targetFragment, tag)
-                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(tag)
-                .commit();
-    }
-
-    public void changeFragment(Fragment targetFragment, String tag, int animation1, int animation2) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(animation1, animation2)
-                .replace(R.id.main_fragment, targetFragment, tag)
-                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(tag)
-                .commit();
+        assert sendMessageFloatingButton != null;
+        sendMessageFloatingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                Intent intent = new Intent(getApplicationContext(), SendMessage.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.animation1, R.anim.animation3);
+            }
+        });
     }
 
     @Override
@@ -90,11 +91,19 @@ public class MainActivity extends AppCompatActivity implements BackHandledFragme
         }
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new SmsDisplayFragment(), "Inbox");
+        adapter.addFragment(new SentMessageDisplay(), "Sent");
+        viewPager.setAdapter(adapter);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
+        //Search Functionality
         final MenuItem searchItem = menu.findItem(R.id.search);
 
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -118,16 +127,14 @@ public class MainActivity extends AppCompatActivity implements BackHandledFragme
             public boolean onSuggestionClick(int position) {
                 android.support.v4.widget.CursorAdapter adapter = searchView.getSuggestionsAdapter();
                 Cursor cursor = adapter.getCursor();
-                if(cursor != null) {
-                    if(cursor.moveToPosition(position)) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(
+                if (cursor != null) {
+                    if (cursor.moveToPosition(position)) {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(
                                 Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                         searchItem.collapseActionView();
                         String geolocation2 = cursor.getString(
                                 cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
-                        Log.d(TAG, "onSuggestionClick:1 " + Arrays.toString(cursor.getColumnNames()));
-                        Log.d(TAG, "onSuggestionClick:1 " + geolocation2);
 
                         intentShowLocal.putExtra("query", geolocation2);
                         intentShowLocal.setAction("android.intent.action.VIEW");
@@ -149,5 +156,23 @@ public class MainActivity extends AppCompatActivity implements BackHandledFragme
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent settings = new Intent(getApplicationContext(), Settings.class);
+                startActivity(settings);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static CoordinatorLayout getCoordinateLayout() {
+        return coordinatorLayout;
     }
 }

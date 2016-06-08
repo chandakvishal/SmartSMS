@@ -5,7 +5,7 @@
     android:orientation="horizontal">
 
     <TableRow
-        android:id="@+id/tableQuestion"
+        android:id="@+id/tableInbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#8CFFFFFF"
@@ -15,15 +15,26 @@
             android:id="@+id/userImageAnswer"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:contentDescription="userimage" />
+            android:contentDescription="@string/userimage" />
 
         <TextView
             android:id="@+id/emailAnswer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:paddingLeft="20dp"
+            android:layout_weight="10"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:paddingTop="15dp"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/unreadCount"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="end|center"
+            android:textColor="@color/DarkGray"
             android:textSize="12sp"
             android:textStyle="bold" />
 

@@ -1,6 +1,5 @@
 package com.example.vinay.sms.Adapter;
 
-import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -49,9 +48,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
         holder.time.setText(ft.format(Long.parseLong(smsList.get(position).date)));
         String message = String.valueOf(smsList.get(position).message);
         holder.message.setText(message);
-        if ("true".equals(smsList.get(position).isSentStatus())) {
-            holder.itemView.setBackgroundColor(Color.CYAN);
-        }
     }
 
     @Override
@@ -61,7 +57,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if ("true".equals(smsList.get(position).isSentStatus())) {
+        if ("true".equals(smsList.get(position).getSentStatus())) {
             return 1;
         }
         return 0;
@@ -82,7 +78,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.MyViewHolder
         Log.d(TAG, "onItemRemove: " + adapterPosition);
         final SMS SMS = smsList.get(adapterPosition);
         Snackbar snackbar = Snackbar
-                .make(recyclerView, "Question Removed", Snackbar.LENGTH_LONG)
+                .make(recyclerView, "Message Deleted", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

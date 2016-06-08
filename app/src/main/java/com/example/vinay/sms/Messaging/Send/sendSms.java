@@ -12,12 +12,16 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.vinay.sms.Utilities.ContactUtil;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
+
+import static com.example.vinay.sms.Constants.DB_Constants.TABLE_SENT;
 
 public class SendSms {
 
-    private static final String TABLE_SENT = "_SENT";
     private String TAG = SendSms.class.getSimpleName();
+
+    private ContactUtil contactUtil;
 
     //---sends an SMS message to another device---
     public void sendSMS(final String phoneNumber, final String message, final Context ctx) {
@@ -39,6 +43,8 @@ public class SendSms {
         Log.d(TAG, "sendSMS: Phone Number:" + phoneNumber);
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
 
+        contactUtil = new ContactUtil(ctx);
+
         //---when the SMS has been sent---
         ctx.registerReceiver(new BroadcastReceiver() {
             @Override
@@ -46,19 +52,18 @@ public class SendSms {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
 
-                        Log.d(TAG, "sendSMS: SENT TO OK:" + phoneNumber);
-
                         ContentValues values = new ContentValues();
 
+                        String address = contactUtil.getContactName(phoneNumber);
                         String date = String.valueOf(System.currentTimeMillis());
 
-                        values.put("address", phoneNumber);//sender name
+                        values.put("address", address);//sender name
                         values.put("body", message);
                         values.put("date", date);
 
                         ctx.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
-                        String tempPhoneNumber = phoneNumber.replaceAll("\\D+","");
-                        db.addUser(tempPhoneNumber, date, message, null, phoneNumber, null, "true", TABLE_SENT);
+                        String tempPhoneNumber = phoneNumber.replaceAll("\\D+", "");
+                        db.addMessage(tempPhoneNumber, date, message, null, phoneNumber, null, "true", TABLE_SENT);
                         Toast.makeText(ctx, "SMS sent",
                                 Toast.LENGTH_SHORT).show();
                         break;
@@ -88,13 +93,8 @@ public class SendSms {
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                        Log.d(TAG, "sendSMS: SENT TO OHK:" + phoneNumber);
-
                         Toast.makeText(ctx, "SMS delivered",
                                 Toast.LENGTH_SHORT).show();
-
-
-
                         break;
                     case Activity.RESULT_CANCELED:
                         Toast.makeText(ctx, "SMS not delivered",

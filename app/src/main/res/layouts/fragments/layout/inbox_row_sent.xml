@@ -8,12 +8,12 @@
     <TableRow
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_corner_sent"
-        android:layout_gravity="end"
-        android:padding="10dp"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentTop="true"
+        android:layout_gravity="end"
+        android:background="@drawable/round_corner_sent"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/messageBody"
@@ -25,6 +25,7 @@
             android:paddingBottom="20dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:textColorLink="@android:color/black"
             android:textIsSelectable="true"
             android:textSize="13sp" />
 
@@ -32,11 +33,12 @@
 
     <TextView
         android:id="@+id/timeStamp"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="15dp"
+        android:textColor="@color/WhiteSmoke"
         android:textSize="12sp"
         android:textStyle="italic" />
 

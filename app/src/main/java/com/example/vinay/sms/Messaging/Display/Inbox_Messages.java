@@ -1,17 +1,23 @@
 package com.example.vinay.sms.Messaging.Display;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.vinay.sms.Adapter.InboxAdapter;
@@ -20,13 +26,14 @@ import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.SMS;
 import com.example.vinay.sms.Messaging.Send.SendSms;
 import com.example.vinay.sms.R;
-import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Inbox_Messages extends BackHandledFragment {
+import static com.example.vinay.sms.Constants.DB_Constants.TABLE_INBOX;
+
+public class Inbox_Messages extends AppCompatActivity {
 
     private InboxAdapter mAdapter;
 
@@ -38,26 +45,39 @@ public class Inbox_Messages extends BackHandledFragment {
 
     SendSms sendSMS = new SendSms();
 
+    DatabaseHandler db;
+
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View parentView = inflater.inflate(R.layout.inbox_holder, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences pref = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        boolean isDark = pref.getBoolean("isDark", true);
+        if (isDark) {
+            setTheme(R.style.AppThemeDark);
+        }
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.inbox_holder);
+
+        db = new DatabaseHandler(getApplicationContext());
 
         final String destination = message.getSenderNumber();
 
-        RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_inbox);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view_for_inbox);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(message.getSenderAddress());
+        getSupportActionBar().setHomeAsUpIndicator
+                (isDark ? R.drawable.ic_arrow_back_white_48dp : R.drawable.ic_arrow_back_black_48dp);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(message.getSenderAddress());
 
-        setHasOptionsMenu(true);
+        final EditText messageText = (EditText) findViewById(R.id.messageSendInbox);
 
-        final EditText messageText = (EditText) parentView.findViewById(R.id.messageSendInbox);
-
-        parentView.findViewById(R.id.buttonSendInbox).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonSendInbox).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String messageToSend = String.valueOf(messageText.getText());
@@ -65,12 +85,18 @@ public class Inbox_Messages extends BackHandledFragment {
                 String phoneNumber = destination.replaceAll("\\D+", "");
                 phoneNumber = phoneNumber.startsWith("91") ? phoneNumber.substring(2)
                         : phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber;
-                sendSMS.sendSMS(phoneNumber, messageToSend, getActivity());
+                sendSMS.sendSMS(phoneNumber, messageToSend, getApplicationContext());
+                messageText.setText("");
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         });
 
         mAdapter = new InboxAdapter(messagesList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
@@ -80,30 +106,22 @@ public class Inbox_Messages extends BackHandledFragment {
         helper.attachToRecyclerView(recyclerView);
 
         getMessages();
-
-        return parentView;
     }
 
     private void getMessages() {
 
         try {
-            DatabaseHandler db = new DatabaseHandler(getActivity().getApplicationContext());
             List<SMS> list;
             String senderAddress = message.getSenderNumber();
             senderAddress = senderAddress.startsWith("+91") ? senderAddress.substring(3) : senderAddress;
+            senderAddress = senderAddress.replaceAll(" +", "");
+            markMessageRead(this, message.getSenderNumber());
             list = db.getAllMessages(senderAddress);
             messagesList.addAll(list);
-            Log.d(TAG, "getMessages: " + messagesList.size());
             mAdapter.notifyDataSetChanged();
         } catch (SQLiteException ex) {
             Log.d("SQLiteException", ex.getMessage());
         }
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        ((MainActivity) getActivity()).changeFragment(new SmsDisplayFragment(), "home", R.anim.enter_anim, R.anim.exit_anim);
-        return true;
     }
 
     @Override
@@ -116,70 +134,37 @@ public class Inbox_Messages extends BackHandledFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
     public void setMessageBody(SMS message) {
         Inbox_Messages.message = message;
     }
 
-//    public void sendMessage(String phoneNumber, String message) {
-//        Log.d(TAG, "sendSMS: SENT TO:" + phoneNumber);
-//
-//
-//        String SENT = "SMS_SENT";
-//        String DELIVERED = "SMS_DELIVERED";
-//
-//        PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
-//                new Intent(SENT), 0);
-//
-//        PendingIntent deliveredPI = PendingIntent.getBroadcast(getActivity(), 0,
-//                new Intent(DELIVERED), 0);
-//
-//        SmsManager sms = SmsManager.getDefault();
-//        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
-//
-//        //---when the SMS has been sent---
-//        getActivity().registerReceiver(new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context arg0, Intent arg1) {
-//                switch (getResultCode()) {
-//                    case Activity.RESULT_OK:
-//                        Toast.makeText(getActivity().getBaseContext(), "SMS sent",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-//                        Toast.makeText(getActivity().getBaseContext(), "Generic failure",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case SmsManager.RESULT_ERROR_NO_SERVICE:
-//                        Toast.makeText(getActivity().getBaseContext(), "No service",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case SmsManager.RESULT_ERROR_NULL_PDU:
-//                        Toast.makeText(getActivity().getBaseContext(), "Null PDU",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case SmsManager.RESULT_ERROR_RADIO_OFF:
-//                        Toast.makeText(getActivity().getBaseContext(), "Radio off",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                }
-//            }
-//        }, new IntentFilter(SENT));
-//
-//        //---when the SMS has been delivered---
-//        getActivity().registerReceiver(new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context arg0, Intent arg1) {
-//                switch (getResultCode()) {
-//                    case Activity.RESULT_OK:
-//                        Toast.makeText(getActivity().getBaseContext(), "SMS delivered",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case Activity.RESULT_CANCELED:
-//                        Toast.makeText(getActivity().getBaseContext(), "SMS not delivered",
-//                                Toast.LENGTH_SHORT).show();
-//                        break;
-//                }
-//            }
-//        }, new IntentFilter(DELIVERED));
-//    }
+    private void markMessageRead(Context context, String number) {
+        Log.d(TAG, "markMessageRead: Marked message read for: " + number);
+        db.updateReadStatus(TABLE_INBOX, number);
+        Uri uri = Uri.parse("content://sms/inbox");
+        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+        try {
+
+            assert cursor != null;
+            while (cursor.moveToNext()) {
+                if ((cursor.getString(cursor.getColumnIndex("address")).equals(number))) {
+                    String SmsMessageId = cursor.getString(cursor.getColumnIndex("_id"));
+                    ContentValues values = new ContentValues();
+                    values.put("read", true);
+                    context.getContentResolver().update(Uri.parse("content://sms/inbox"), values, "_id=" + SmsMessageId, null);
+                    return;
+                }
+            }
+            cursor.close();
+        } catch (Exception e) {
+            Log.e("Mark Read", "Error in Read: " + e.toString());
+        }
+    }
 }

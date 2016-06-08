@@ -19,11 +19,12 @@
         android:id="@+id/messageBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:autoLink="phone"
+        android:autoLink="all"
         android:minHeight="48dp"
         android:paddingBottom="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:textColorLink="@android:color/black"
         android:textIsSelectable="true"
         android:textSize="18sp" />
 

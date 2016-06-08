@@ -1,7 +1,9 @@
 package com.example.vinay.sms.Search;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -27,6 +29,13 @@ public class SearchableActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences pref = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        boolean isDark = pref.getBoolean("isDark", true);
+        if (isDark) {
+            setTheme(R.style.AppThemeDark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchable);
 
@@ -57,7 +66,8 @@ public class SearchableActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+            getSupportActionBar().setHomeAsUpIndicator
+                    (isDark ? R.drawable.ic_arrow_back_white_48dp : R.drawable.ic_arrow_back_black_48dp);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle(searchResult);

@@ -2,12 +2,13 @@ package com.example.vinay.sms.Messaging.Display;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,10 +24,9 @@ import android.widget.Toast;
 
 import com.example.vinay.sms.Adapter.SmsAdapter;
 import com.example.vinay.sms.Helper.SmsTouchHelper;
-import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.Receive.SmsReceiver;
 import com.example.vinay.sms.Messaging.SMS;
-import com.example.vinay.sms.Messaging.Send.SendMessage;
+import com.example.vinay.sms.Messaging.Send.GetMessages;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.ClickListener;
@@ -39,28 +39,24 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-public class SmsDisplayFragment extends BackHandledFragment {
+import static com.example.vinay.sms.Constants.DB_Constants.TABLE_INBOX;
 
-    private SmsAdapter mAdapter;
+public class SmsDisplayFragment extends BackHandledFragment {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private static final List<SMS> smsList = new ArrayList<>();
-
+    private static List<SMS> smsList = new ArrayList<>();
     private static final LinkedHashSet<SMS> linkedHashSet = new LinkedHashSet<>();
-
     private static final LinkedHashSet<SMS> uniquelinkedHashSet = new LinkedHashSet<>();
-
-    private final HashMap<String, String> contactsStored = new HashMap<>();
-
+    private static final HashMap<String, Integer> countOfMessages = new HashMap<>();
     private final Inbox_Messages inbox_messages = new Inbox_Messages();
 
+    private static DatabaseHandler db;
+    private static SmsAdapter mAdapter;
+
+    GetMessages getMessagesObject;
+
     private Boolean exit = false;
-
-    private static final String TABLE_INBOX = "_INBOX";
-
-    private DatabaseHandler db;
-
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -68,6 +64,8 @@ public class SmsDisplayFragment extends BackHandledFragment {
         View parentView = inflater.inflate(R.layout.sms_display, container, false);
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_answers);
+
+        getMessagesObject = new GetMessages(getActivity());
 
         //Used for update on new incoming message
         @SuppressWarnings("unused")
@@ -81,19 +79,8 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
         setHasOptionsMenu(true);
 
-        FloatingActionButton sendMessageFloatingButton = (FloatingActionButton) parentView.findViewById(R.id.sendMessageFloatingButton);
-
-        sendMessageFloatingButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View arg0) {
-                ((MainActivity) getActivity()).changeFragment(new SendMessage(), "home");
-            }
-
-        });
-
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(parentView.getWindowToken(), 0);
-
-        //Floating Action Button Menu Configuration
 
         mAdapter = new SmsAdapter(getActivity(), smsList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -102,20 +89,30 @@ public class SmsDisplayFragment extends BackHandledFragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 
-        ItemTouchHelper.Callback callback = new SmsTouchHelper(mAdapter, recyclerView);
+        ItemTouchHelper.Callback callback = new SmsTouchHelper(mAdapter, recyclerView, ItemTouchHelper.RIGHT);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(recyclerView);
-        storeContacts();
-        getMessages();
+
+        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUNINBOX", true);
+        if (isFirstRun) {
+            // Code to run once
+            SharedPreferences.Editor editor = wmbPreference.edit();
+            editor.putBoolean("FIRSTRUNINBOX", false);
+            editor.apply();
+            getMessages();
+        } else {
+            updateList();
+        }
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
+
                 SMS message = smsList.get(position);
-
                 inbox_messages.setMessageBody(message);
-
-                ((MainActivity) getActivity()).changeFragment(new Inbox_Messages(), "home");
+                startActivity(new Intent(getContext(), Inbox_Messages.class));
+                getActivity().finish();
             }
 
             @Override
@@ -151,69 +148,25 @@ public class SmsDisplayFragment extends BackHandledFragment {
         Cursor cursor1 = getActivity().getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type", "read"}, null, null, null);
         //noinspection deprecation
         getActivity().startManagingCursor(cursor1);
-        LinkedHashSet<String> senderHashSet = new LinkedHashSet<>();
         if (smsList.size() == 0) {
-            String[] columns = new String[]{"address", "person", "date", "body", "type", "read"};
-            assert cursor1 != null;
-            if (cursor1.getCount() > 0) {
-//            String count = Integer.toString(cursor1.getCount());
-                while (cursor1.moveToNext()) {
-                    String sender = cursor1.getString(cursor1.getColumnIndex(columns[0]));
-//                String name = cursor1.getString(cursor1.getColumnIndex(columns[1]));
-                    String date = cursor1.getString(cursor1.getColumnIndex(columns[2]));
-                    String msg = cursor1.getString(cursor1.getColumnIndex(columns[3]));
-                    String type = cursor1.getString(cursor1.getColumnIndex(columns[4]));
-                    String read = cursor1.getString(cursor1.getColumnIndex(columns[5]));
-
-                    SMS m = new SMS(sender, date, msg, type, sender, read, "false");
-                    if (!senderHashSet.contains(sender)) {
-                        uniquelinkedHashSet.add(m);
-                        senderHashSet.add(sender);
-                    }
-                    linkedHashSet.add(m);
-                }
-                smsList.clear();
-                smsList.addAll(uniquelinkedHashSet);
-                for (SMS sender : smsList) {
-                    String senderAddress = sender.getSenderAddress();
-                    sender.setSenderAddress(getSenderNumber(senderAddress));
-                }
-                mAdapter.notifyDataSetChanged();
-
-                //Background Thread to store all messages in a SQLiteDataBase for search
-                new Thread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                for (SMS eachMessage : linkedHashSet) {
-                                    String senderAddress = eachMessage.getSenderAddress();
-                                    String date = eachMessage.getDate();
-                                    String msg = eachMessage.getMessage();
-                                    String senderNumber = eachMessage.getSenderNumber();
-                                    String type = eachMessage.getType();
-                                    String readStatus = eachMessage.getReadStatus();
-                                    String sentStatus = eachMessage.isSentStatus();
-                                    db.addUser(senderAddress, date, msg, type, senderNumber, readStatus, sentStatus, TABLE_INBOX);
-                                }
-                            }
-                        }
-                        // Starts the thread by calling the run() method in its Runnable
-                ).start();
-            }
+            getMessagesObject.getMessgaes(cursor1, uniquelinkedHashSet, linkedHashSet, countOfMessages, "false", TABLE_INBOX);
+            smsList.addAll(uniquelinkedHashSet);
+            mAdapter.notifyDataSetChanged();
         }
     }
 
-    public String getSenderNumber(String senderAddress) {
-        if (senderAddress.matches("^([+,.\\s0-9]*)([0-9]+)")) {
-            senderAddress = getContactName(senderAddress);
-        }
-        return senderAddress;
+    public void updateList() {
+        smsList.clear();
+        countOfMessages.clear();
+        LinkedHashSet<SMS> uniquelinkedHashSet = new LinkedHashSet<>();
+        getMessagesObject.updateList(countOfMessages, uniquelinkedHashSet, TABLE_INBOX);
+        smsList.addAll(uniquelinkedHashSet);
+        mAdapter.notifyDataSetChanged();
     }
 
     public void updateList(final ArrayList<SMS> smsMessage) {
         for (SMS eachMessage : smsMessage) {
             Log.d(TAG, "updateList: SENDER NUMBER" + eachMessage.getReadStatus());
-            smsList.add(0, eachMessage);
             ContentValues values = new ContentValues();
 
             String senderAddress = eachMessage.getSenderAddress();
@@ -222,7 +175,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
             String senderNumber = eachMessage.getSenderNumber();
             String type = eachMessage.getType();
             String readStatus = eachMessage.getReadStatus();
-            String sentStatus = eachMessage.isSentStatus();
+            String sentStatus = eachMessage.getSentStatus();
 
             values.put("address", senderNumber);//sender name
             values.put("body", msg);
@@ -230,13 +183,10 @@ public class SmsDisplayFragment extends BackHandledFragment {
             values.put("type", type);
 
             getActivity().getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
-            db.addUser(senderAddress, date, msg, type, senderNumber, readStatus, sentStatus, TABLE_INBOX);
+            db.addMessage(senderAddress, date, msg, type, senderNumber, readStatus, sentStatus, TABLE_INBOX);
         }
-        for (SMS sender : smsList) {
-            String senderAddress = sender.getSenderAddress();
-            sender.setSenderAddress(getSenderNumber(senderAddress));
-        }
-        mAdapter.notifyDataSetChanged();
+
+        updateList();
     }
 
     @Override
@@ -249,46 +199,11 @@ public class SmsDisplayFragment extends BackHandledFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void storeContacts() {
-        Cursor cursor = getActivity().getContentResolver().query
-                (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        assert cursor != null;
-        Log.d(TAG, "getContactCount: " + cursor.getCount());
-        while (cursor.moveToNext()) {
-            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            Log.d(TAG, "getContactName: " + name);
-            String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            Log.d(TAG, "getContactNumber: " + phoneNumber);
-            contactsStored.put(phoneNumber, name);
+    public static int getCountOfUnreadMessages(String senderAddress) {
+        try {
+            return countOfMessages.get(senderAddress);
+        } catch (Exception e) {
+            return 0;
         }
-        cursor.close();
-    }
-
-    private String getContactName(String number) {
-
-        String name = null;
-
-        // define the columns I want the query to return
-        String[] projection = new String[]{
-                ContactsContract.PhoneLookup.DISPLAY_NAME,
-                ContactsContract.PhoneLookup._ID};
-
-        // encode the phone number and build the filter URI
-        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-
-        // query time
-        Cursor cursor = getActivity().getContentResolver().query(contactUri, projection, null, null, null);
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                //Contact Found
-                name = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
-            } else {
-                //Contact not found
-                name = number;
-            }
-            cursor.close();
-        }
-        return name;
     }
 }

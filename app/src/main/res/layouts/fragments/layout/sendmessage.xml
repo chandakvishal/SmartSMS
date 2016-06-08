@@ -9,22 +9,25 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/LightCyan">
+        android:background="@drawable/image_4">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/LightBlue"
-            android:padding="10dp">
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingTop="10dp">
 
             <ImageButton
                 android:id="@+id/get_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#00FFFFFF"
                 android:layout_gravity="center"
+                android:background="#00FFFFFF"
                 android:contentDescription="@string/contacts_button"
-                android:src="@drawable/ic_contacts" />
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_contacts_white_48dp" />
 
             <MultiAutoCompleteTextView
                 android:id="@+id/txtPhoneNumber"
@@ -34,7 +37,9 @@
                 android:focusableInTouchMode="true"
                 android:hint="@string/select_contact"
                 android:imeOptions="actionDone"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:textColor="@color/Wheat"
+                android:textColorHint="@color/Wheat" />
 
         </LinearLayout>
 
@@ -43,8 +48,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:padding="5dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="5dp">
 
             <EditText
                 android:id="@+id/messageSendInbox"
@@ -53,12 +58,13 @@
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="5"
                 android:gravity="top|start"
-                android:padding="10dp"
                 android:hint="@string/write_message"
                 android:imeOptions="actionSend|flagNoEnterAction"
                 android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
                 android:maxLines="10"
-                android:scrollHorizontally="false" />
+                android:padding="10dp"
+                android:scrollHorizontally="false"
+                android:textColorHint="@color/Wheat" />
 
             <ImageButton
                 android:id="@+id/buttonSendInbox"
@@ -70,7 +76,7 @@
                 android:gravity="center"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:src="@drawable/ic_send_black_36dp" />
+                android:src="@drawable/ic_send_white_48dp" />
         </LinearLayout>
 
     </RelativeLayout>

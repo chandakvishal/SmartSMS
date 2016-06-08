@@ -1,56 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/image_3"
     android:isScrollContainer="true"
     android:orientation="vertical"
     android:overScrollMode="ifContentScrolls"
     android:scrollbars="vertical">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view_for_inbox"
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/ll_send_message"
-            android:layout_alignParentTop="true"
-            android:background="@color/LightGrey"
-            android:scrollbars="vertical" />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <LinearLayout
-            android:id="@+id/ll_send_message"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="?attr/ToolBarStyle" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@color/White"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/messageSendInbox"
-                android:layout_width="0dp"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_for_inbox"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:hint="@string/write_message"
-                android:imeOptions="actionSend|flagNoEnterAction"
-                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
-                android:maxLines="10"
-                android:scrollHorizontally="false" />
+                android:layout_above="@+id/ll_send_message"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/image_3"
+                android:scrollbars="vertical" />
 
-            <ImageButton
-                android:id="@+id/buttonSendInbox"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/ll_send_message"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#00FFFFFF"
-                android:contentDescription="@string/send_button"
-                android:gravity="center"
-                android:paddingRight="5dp"
-                android:src="@drawable/ic_send_black_36dp" />
-        </LinearLayout>
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/reply_style"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-    </RelativeLayout>
+                <EditText
+                    android:id="@+id/messageSendInbox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:background="#00FFFFFF"
+                    android:hint="@string/write_message"
+                    android:imeOptions="actionSend|flagNoEnterAction"
+                    android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+                    android:maxLines="10"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="7dp"
+                    android:textColorHint="@color/Wheat"
+                    android:textColorLink="@android:color/black" />
+
+                <ImageButton
+                    android:id="@+id/buttonSendInbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:contentDescription="@string/send_button"
+                    android:gravity="center"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:src="@drawable/ic_send_white_48dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

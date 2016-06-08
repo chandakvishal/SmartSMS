@@ -3,14 +3,14 @@ package com.example.vinay.sms.Helper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-import com.example.vinay.sms.Adapter.SmsAdapter;
+import com.example.vinay.sms.Adapter.MessagingAdapter;
 
 public class SmsTouchHelper extends ItemTouchHelper.SimpleCallback {
-    private SmsAdapter smsAdapter;
+    private MessagingAdapter smsAdapter;
     private RecyclerView recyclerView;
 
-    public SmsTouchHelper(SmsAdapter smsAdapter, RecyclerView recyclerView) {
-        super(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+    public SmsTouchHelper(MessagingAdapter smsAdapter, RecyclerView recyclerView, int swipe) {
+        super(0, swipe);
         this.smsAdapter = smsAdapter;
         this.recyclerView = recyclerView;
     }

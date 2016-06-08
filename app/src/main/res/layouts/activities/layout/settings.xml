@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:scrollbarStyle="insideInset">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="?attr/ToolBarStyle" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/generalTextView"
+            android:layout_width="395dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="@string/general"
+            android:textColor="@color/CadetBlue" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/Black" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/darkThemeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="95"
+                android:clickable="false"
+                android:text="@string/light_theme"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Switch
+                android:id="@+id/lightThemeSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="5"
+                android:checked="false"
+                android:padding="10dp" />
+
+        </TableRow>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/Black" />
+
+        <TextView
+            android:id="@+id/notificationTextView"
+            android:layout_width="395dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="@string/notifications"
+            android:textColor="@color/CadetBlue" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/Black" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/groupNotificationTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="95"
+                android:text="@string/group_notifications"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Switch
+                android:id="@+id/notificationSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="5"
+                android:checked="false"
+                android:padding="10dp" />
+
+        </TableRow>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/Black" />
+
+        <TextView
+            android:id="@+id/syncTextView"
+            android:layout_width="395dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="@string/sync_settings"
+            android:textColor="@color/CadetBlue" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/Black" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/backupPreference"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_weight="95"
+                android:paddingTop="10dp"
+                android:text="@string/backup_over_cellular"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Switch
+                android:id="@+id/backupPreferenceSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="5"
+                android:checked="false"
+                android:padding="10dp" />
+
+        </TableRow>
+
+        <Button
+            android:id="@+id/exportLocalButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="@string/export_to_local_storage"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/backupButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="@string/backup_to_drive"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/restoreButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="@string/restore_backup_from_drive"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/detailsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:text="@string/recent_backup_details"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/Black" />
+
+        <TextView
+            android:id="@+id/recentTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+</LinearLayout>
