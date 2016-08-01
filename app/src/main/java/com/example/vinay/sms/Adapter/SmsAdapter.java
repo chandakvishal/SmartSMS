@@ -19,7 +19,6 @@ import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.Messaging.SMS;
 import com.example.vinay.sms.R;
-import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.List;

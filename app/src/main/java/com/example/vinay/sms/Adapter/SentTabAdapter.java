@@ -31,6 +31,7 @@ public class SentTabAdapter extends RecyclerView.Adapter<SentTabAdapter.MyViewHo
     private Context ctx;
     DatabaseHandler db;
 
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private List<SMS> smsListToDelete = new ArrayList<>();
 
     public SentTabAdapter(Activity activity, List<SMS> smsList) {

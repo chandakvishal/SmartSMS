@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.example.vinay.sms.Adapter.SentTabAdapter;
 import com.example.vinay.sms.Helper.SmsTouchHelper;
 import com.example.vinay.sms.Messaging.SMS;
-import com.example.vinay.sms.Messaging.Send.GetMessages;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.ClickListener;

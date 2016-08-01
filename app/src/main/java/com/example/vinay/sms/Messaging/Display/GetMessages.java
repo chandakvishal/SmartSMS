@@ -1,4 +1,4 @@
-package com.example.vinay.sms.Messaging.Send;
+package com.example.vinay.sms.Messaging.Display;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -15,6 +15,7 @@ public class GetMessages {
 
     private ContactUtil contactUtil;
     private DatabaseHandler db;
+
     public GetMessages(Context context) {
         contactUtil = new ContactUtil(context);
         db = new DatabaseHandler(context);
@@ -84,6 +85,8 @@ public class GetMessages {
         for (SMS message : list) {
             String sender = message.getSenderAddress();
             String read = message.getReadStatus();
+            if (read == null)
+                read = "0";
             if (!senderHashSet.contains(sender)) {
                 uniquelinkedHashSet.add(message);
                 senderHashSet.add(sender);

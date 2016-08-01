@@ -10,16 +10,19 @@ import android.util.Log;
 import com.example.vinay.sms.Messaging.SMS;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_ADDRESS;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_BODY;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_DATE;
+import static com.example.vinay.sms.Constants.DB_Constants.KEY_NAME;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_ID;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_NUMBER;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_READ_STATUS;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_SENT_STATUS;
 import static com.example.vinay.sms.Constants.DB_Constants.KEY_TYPE;
+import static com.example.vinay.sms.Constants.DB_Constants.TABLE_CONTACTS;
 import static com.example.vinay.sms.Constants.DB_Constants.TABLE_INBOX;
 import static com.example.vinay.sms.Constants.DB_Constants.TABLE_SENT;
 
@@ -59,8 +62,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_READ_STATUS + " TEXT, "
                 + KEY_SENT_STATUS + " TEXT" + ")";
 
+        String CREATE_CONTACTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + " ("
+                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + KEY_NAME + " TEXT, "
+                + KEY_NUMBER + " TEXT" + ")";
+
         db.execSQL(CREATE_INBOX_TABLE);
         db.execSQL(CREATE_SENT_TABLE);
+        db.execSQL(CREATE_CONTACTS_TABLE);
     }
 
     // Upgrading database
@@ -72,6 +81,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INBOX);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 
         // Create tables again
         onCreate(db);
@@ -129,6 +139,77 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(TABLE_NAME, null, values);
         Log.i("Added User " + number, " AS " + address + "Successfully Added User in" + TABLE_NAME + " Table");
         db.close(); // Closing database connection
+    }
+
+    /**
+     * Storing user contact details in database
+     */
+    public void addContacts(String name, String number) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_CONTACTS, null, null);
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, name); // SenderAddress
+        values.put(KEY_NUMBER, number); // SenderNumber
+
+        // Inserting Row
+        db.insert(TABLE_CONTACTS, null, values);
+        Log.i("Added User " + number, "Successfully Added User in" + TABLE_CONTACTS + " Table");
+        db.close(); // Closing database connection
+    }
+
+    public HashMap<String, String> getContacts() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        HashMap<String, String> contacts = new HashMap<>();
+        String SELECT_QUERY = "SELECT NAME, NUMBER FROM " + TABLE_CONTACTS;
+
+        Cursor cursor = db.rawQuery(SELECT_QUERY, null);
+        Log.d("TAG", "getContacts:: " + cursor.getCount());
+
+        //To add all elements of the cursor in a list (used in search)
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // The Cursor is now set to the right position
+            String name = cursor.getString(0);
+            String number = cursor.getString(1);
+            contacts.put(name, number);
+        }
+        cursor.close();
+
+        return contacts;
+    }
+
+    public ArrayList<String> getContact(String name) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String SELECT_QUERY = "SELECT NUMBER FROM " + TABLE_CONTACTS + " WHERE NAME LIKE \"%" + name + "%\" COLLATE NOCASE";
+        ArrayList<String> numbers = new ArrayList<>();
+        Cursor cursor = db.rawQuery(SELECT_QUERY, null);
+        Log.d("TAG", "getContact:: " + cursor.getCount());
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // The Cursor is now set to the right position
+            numbers.add(cursor.getString(0));
+        }
+        cursor.close();
+
+        return numbers;
+    }
+
+    public ArrayList<String> getContactName(String name) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String SELECT_QUERY = "SELECT NAME FROM " + TABLE_CONTACTS + " WHERE NAME LIKE \"%" + name + "%\" COLLATE NOCASE";
+        ArrayList<String> numbers = new ArrayList<>();
+        Cursor cursor = db.rawQuery(SELECT_QUERY, null);
+        Log.d("TAG", "getContact:: " + cursor.getCount());
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // The Cursor is now set to the right position
+            numbers.add(cursor.getString(0));
+        }
+        cursor.close();
+
+        return numbers;
     }
 
     public void deleteSingleMessage(List<SMS> smsList, String TABLE_NAME) {
@@ -237,7 +318,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.d("Database Handler", "updateReadStatus: Update Read status of: " + number);
         // updating row
         return db.update(tableName, values, KEY_NUMBER + " = ?",
-                new String[] { String.valueOf(number) });
+                new String[]{String.valueOf(number)});
     }
 
     public List<SMS> queryDatabase(String selectQuery) {

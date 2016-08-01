@@ -1,5 +1,6 @@
 package com.example.vinay.sms.Messaging.Display;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,7 +28,6 @@ import com.example.vinay.sms.Adapter.SmsAdapter;
 import com.example.vinay.sms.Helper.SmsTouchHelper;
 import com.example.vinay.sms.Messaging.Receive.SmsReceiver;
 import com.example.vinay.sms.Messaging.SMS;
-import com.example.vinay.sms.Messaging.Send.GetMessages;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
 import com.example.vinay.sms.Utilities.ClickListener;
@@ -61,7 +62,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
     @SuppressWarnings("ConstantConditions")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View parentView = inflater.inflate(R.layout.sms_display, container, false);
+        final View parentView = inflater.inflate(R.layout.sms_display, container, false);
 
         RecyclerView recyclerView = (RecyclerView) parentView.findViewById(R.id.recycler_view_for_answers);
 
@@ -93,7 +94,7 @@ public class SmsDisplayFragment extends BackHandledFragment {
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(recyclerView);
 
-        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        final SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
         boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUNINBOX", true);
         if (isFirstRun) {
             // Code to run once
@@ -120,6 +121,44 @@ public class SmsDisplayFragment extends BackHandledFragment {
 
             }
         }));
+
+        ContentResolver cr1 = getActivity().getContentResolver();
+
+        final Cursor managedCursor = cr1.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+
+        int numOfContacts = wmbPreference.getInt("numOfContacts", 0);
+
+        assert managedCursor != null;
+        if (managedCursor.getCount() != numOfContacts) {
+            new Thread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+
+                            //TODO: DELETE THE TABLE BEFORE NEW UPDATE
+                            Log.d(TAG, "run: " + "Entered Thread for Execution");
+                            if (managedCursor.moveToFirst()) {
+                                String contactName, contactNumber;
+
+                                int nameColumn = managedCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                                int phoneColumn = managedCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                                do {
+                                    //Get the field values
+                                    contactName = managedCursor.getString(nameColumn);
+                                    contactNumber = managedCursor.getString(phoneColumn);
+                                    //noinspection StringEquality
+                                    if ((contactName != " " || contactName != null) && (contactNumber != " " || contactNumber != null)) {
+                                        db.addContacts(contactName, contactNumber);
+                                    }
+                                } while (managedCursor.moveToNext());
+                                SharedPreferences.Editor editor = wmbPreference.edit();
+                                editor.putInt("numOfContacts", managedCursor.getCount());
+                                editor.apply();
+                            }
+                            managedCursor.close();
+                        }
+                    }).start();
+        }
 
         return parentView;
     }

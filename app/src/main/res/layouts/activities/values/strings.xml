@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="query">Query:</string>
+    <string name="response">Response:</string>
+    <string name="assistant">Assistant</string>
+    <string name="enter_the_query_here">Enter the query here</string>
+    <string name="tagLine">Your Personal Smart SMS Manager</string>
+    <string name="applogo">appLogo</string>
+    <string name="first_run">Preparing the app for first run..</string>
 </resources>

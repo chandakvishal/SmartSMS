@@ -155,7 +155,7 @@ public class Settings extends AppCompatActivity implements GoogleApiClient.Conne
             }
         });
 
-        TextView backupButton = (Button) findViewById(R.id.backupButton);
+        Button backupButton = (Button) findViewById(R.id.backupButton);
         assert backupButton != null;
         backupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +171,7 @@ public class Settings extends AppCompatActivity implements GoogleApiClient.Conne
             }
         });
 
-        TextView restoreButton = (Button) findViewById(R.id.restoreButton);
+        Button restoreButton = (Button) findViewById(R.id.restoreButton);
         assert restoreButton != null;
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,7 +194,6 @@ public class Settings extends AppCompatActivity implements GoogleApiClient.Conne
                 .build();
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -205,6 +204,7 @@ public class Settings extends AppCompatActivity implements GoogleApiClient.Conne
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
             case RESOLVE_CONNECTION_REQUEST_CODE:
+                Log.d(TAG, "onActivityResult: " + resultCode);
                 canConnect = resultCode == RESULT_OK;
                 break;
         }

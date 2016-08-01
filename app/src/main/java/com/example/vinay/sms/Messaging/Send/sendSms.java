@@ -19,7 +19,7 @@ import static com.example.vinay.sms.Constants.DB_Constants.TABLE_SENT;
 
 public class SendSms {
 
-    private String TAG = SendSms.class.getSimpleName();
+    private final String TAG = this.getClass().getSimpleName();
 
     private ContactUtil contactUtil;
 

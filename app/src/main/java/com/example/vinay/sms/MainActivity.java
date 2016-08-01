@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        //TODO: Add a splash Screen
         SharedPreferences pref = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         boolean isDark = pref.getBoolean("isDark", true);
         if (isDark) {
@@ -165,6 +165,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_settings:
                 Intent settings = new Intent(getApplicationContext(), Settings.class);
                 startActivity(settings);
+                finish();
+                return true;
+            case R.id.assiatant:
+                Intent assistant = new Intent(getApplicationContext(), ApiAi.class);
+                startActivity(assistant);
                 finish();
                 return true;
             default:

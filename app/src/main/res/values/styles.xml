@@ -14,7 +14,7 @@
         <item name="ic_send">@drawable/ic_send_black_48dp</item>
         <item name="ic_arrow">@drawable/ic_arrow_back_black_48dp</item>
         <item name="ic_contacts">@drawable/ic_contacts_black_48dp</item>
-        <item name="ic_plus">@drawable/ic_add_black_48dp</item>
+        <item name="ic_plus">@drawable/ic_add_white_48dp</item>
 
     </style>
 
@@ -101,6 +101,23 @@
     <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
         <item name="colorAccent">@color/AntiqueWhite</item>
         <item name="android:textColorSecondary">@color/AntiqueWhite</item>
+    </style>
+
+    <style name="ApiAi.Microphone">
+        <item name="mainColor">@color/mic_colors</item>
+        <item name="maxRadius">@dimen/mic_button_halo_radius_max</item>
+        <item name="minRadius">@dimen/mic_button_halo_radius_min</item>
+        <item name="centerColor">@color/icon_orange_color</item>
+        <item name="haloColor">@color/mic_button_halo</item>
+        <item name="android:src">@drawable/mic_control</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_width">@dimen/mic_button_size</item>
+        <item name="android:layout_height">@dimen/mic_button_size</item>
+        <item name="android:scaleType">centerInside</item>
     </style>
 
 </resources>

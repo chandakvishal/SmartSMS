@@ -8,6 +8,8 @@ public class DB_Constants {
 
     public static final String KEY_DATE = "DATE";
 
+    public static final String KEY_NAME = "NAME";
+
     public static final String KEY_BODY = "BODY";
 
     public static final String KEY_TYPE = "TYPE";
@@ -21,4 +23,6 @@ public class DB_Constants {
     public static final String TABLE_INBOX = "_INBOX";
 
     public static final String TABLE_SENT = "_SENT";
+
+    public static final String TABLE_CONTACTS = "_CONTACTS";
 }

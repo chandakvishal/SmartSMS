@@ -1,10 +1,8 @@
 package com.example.vinay.sms.Messaging.Send;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
@@ -21,6 +19,7 @@ import android.widget.TextView;
 import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.Display.SentMessageDisplay;
 import com.example.vinay.sms.R;
+import com.example.vinay.sms.Utilities.DatabaseHandler;
 import com.onegravity.contactpicker.contact.Contact;
 import com.onegravity.contactpicker.contact.ContactDescription;
 import com.onegravity.contactpicker.contact.ContactSortOrder;
@@ -30,6 +29,7 @@ import com.onegravity.contactpicker.picture.ContactPictureType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SendMessage extends AppCompatActivity {
 
@@ -43,7 +43,7 @@ public class SendMessage extends AppCompatActivity {
 
     private final ArrayList<String> contactNumberList = new ArrayList<>();
 
-    private final HashMap<String, String> nameToNumberMap = new HashMap<>();
+    private HashMap<String, String> nameToNumberMap = new HashMap<>();
 
     private List<Contact> mContacts;
 
@@ -51,12 +51,16 @@ public class SendMessage extends AppCompatActivity {
 
     private SentMessageDisplay sentMessageDisplay = new SentMessageDisplay();
 
+    private DatabaseHandler db;
+
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.sendmessage);
+
+        db = new DatabaseHandler(getApplicationContext());
 
         txtPhoneNumber = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNumber);
 
@@ -121,37 +125,18 @@ public class SendMessage extends AppCompatActivity {
         TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(getResources().getColor(R.color.YellowGreen));
 
-        ContentResolver cr1 = getContentResolver();
-
-        Cursor managedCursor = cr1.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-
-        assert managedCursor != null;
-        if (managedCursor.moveToFirst()) {
-            String contactName, contactNumber;
-
-            int nameColumn = managedCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-            int phoneColumn = managedCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-            do {
-                //Get the field values
-                contactName = managedCursor.getString(nameColumn);
-                contactNumber = managedCursor.getString(phoneColumn);
-                //noinspection StringEquality
-                if ((contactName != " " || contactName != null) && (contactNumber != " " || contactNumber != null)) {
-                    contactNameList.add(contactName);
-                    contactNumberList.add(contactNumber);
-                    nameToNumberMap.put(contactName, contactNumber);
-                }
-            } while (managedCursor.moveToNext());
-
-            managedCursor.close();
-
-            String[] nameValue = contactNameList.toArray(new String[contactNameList.size()]);
-
-            ArrayAdapter adapter = new ArrayAdapter<>(
-                    this, android.R.layout.simple_list_item_1, nameValue);
-            txtPhoneNumber.setAdapter(adapter);
-            txtPhoneNumber.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        nameToNumberMap = db.getContacts();
+        for (Map.Entry<String, String> entry : nameToNumberMap.entrySet()) {
+            contactNameList.add(entry.getKey());
+            contactNumberList.add(entry.getValue());
         }
+
+        String[] nameValue = contactNameList.toArray(new String[contactNameList.size()]);
+
+        ArrayAdapter adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_list_item_1, nameValue);
+        txtPhoneNumber.setAdapter(adapter);
+        txtPhoneNumber.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
     }
 
     @Override
