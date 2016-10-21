@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.Display.SentMessageDisplay;
 import com.example.vinay.sms.R;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 public class SendMessage extends AppCompatActivity {
 
@@ -47,7 +50,7 @@ public class SendMessage extends AppCompatActivity {
 
     private List<Contact> mContacts;
 
-    private final SendSms sendSMS = new SendSms();
+    private final sendSms sendSMS = new sendSms();
 
     private SentMessageDisplay sentMessageDisplay = new SentMessageDisplay();
 
@@ -57,7 +60,6 @@ public class SendMessage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.sendmessage);
 
         db = new DatabaseHandler(getApplicationContext());
@@ -92,6 +94,13 @@ public class SendMessage extends AppCompatActivity {
                         updateList();
                     }
                 }
+            }
+        });
+
+        findViewById(R.id.crashButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                forceCrash(view);
             }
         });
 
@@ -138,6 +147,11 @@ public class SendMessage extends AppCompatActivity {
         txtPhoneNumber.setAdapter(adapter);
         txtPhoneNumber.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
     }
+
+    public void forceCrash(View view) {
+        throw new RuntimeException("This is a crash");
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -13,10 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Handler;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.vinay.sms.Messaging.Display.GetMessages;
 import com.example.vinay.sms.Messaging.SMS;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
 
+import io.fabric.sdk.android.Fabric;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -37,6 +39,7 @@ public class ApplicationLauncher extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_splash);
 
         getMessagesObject = new GetMessages(this);

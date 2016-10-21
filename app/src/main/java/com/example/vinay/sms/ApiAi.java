@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.vinay.sms.Messaging.Send.SendSms;
+import com.example.vinay.sms.Messaging.Send.sendSms;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import java.math.BigInteger;
@@ -44,7 +44,7 @@ public class ApiAi extends AppCompatActivity {
 
     DatabaseHandler db;
 
-    SendSms sendSms = new SendSms();
+    com.example.vinay.sms.Messaging.Send.sendSms sendSms = new sendSms();
 
     AIConfiguration config;
 

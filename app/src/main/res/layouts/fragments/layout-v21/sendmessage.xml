@@ -33,7 +33,7 @@
                 android:id="@+id/txtPhoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edittextstyle"
+                android:background="@drawable/edit_text_style"
                 android:focusableInTouchMode="true"
                 android:hint="@string/select_contact"
                 android:imeOptions="actionDone"
@@ -66,6 +66,16 @@
                 android:padding="10dp"
                 android:scrollHorizontally="false"
                 android:textColorHint="@color/Wheat" />
+
+            <Button
+                android:id="@+id/crashButton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Force Crash!"
+                android:onClick="forceCrash"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
 
             <ImageButton
                 android:id="@+id/buttonSendInbox"

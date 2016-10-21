@@ -17,7 +17,7 @@ import com.example.vinay.sms.Utilities.DatabaseHandler;
 
 import static com.example.vinay.sms.Constants.DB_Constants.TABLE_SENT;
 
-public class SendSms {
+public class sendSms {
 
     private final String TAG = this.getClass().getSimpleName();
 

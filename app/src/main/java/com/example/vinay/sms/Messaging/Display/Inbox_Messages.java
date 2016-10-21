@@ -24,7 +24,7 @@ import com.example.vinay.sms.Adapter.InboxAdapter;
 import com.example.vinay.sms.Helper.InboxTouchHelper;
 import com.example.vinay.sms.MainActivity;
 import com.example.vinay.sms.Messaging.SMS;
-import com.example.vinay.sms.Messaging.Send.SendSms;
+import com.example.vinay.sms.Messaging.Send.sendSms;
 import com.example.vinay.sms.R;
 import com.example.vinay.sms.Utilities.DatabaseHandler;
 
@@ -43,7 +43,7 @@ public class Inbox_Messages extends AppCompatActivity {
 
     private static SMS message;
 
-    SendSms sendSMS = new SendSms();
+    sendSms sendSMS = new sendSms();
 
     DatabaseHandler db;
 

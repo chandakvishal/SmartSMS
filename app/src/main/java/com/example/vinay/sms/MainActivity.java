@@ -20,12 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.vinay.sms.Adapter.ViewPagerAdapter;
 import com.example.vinay.sms.Messaging.Display.SentMessageDisplay;
 import com.example.vinay.sms.Messaging.Display.SmsDisplayFragment;
 import com.example.vinay.sms.Messaging.Send.SendMessage;
 import com.example.vinay.sms.Search.SearchableActivity;
 import com.example.vinay.sms.Utilities.BackHandledFragment;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity
         implements BackHandledFragment.BackHandlerInterface, SearchView.OnQueryTextListener {
@@ -47,6 +50,11 @@ public class MainActivity extends AppCompatActivity
             setTheme(R.style.AppThemeDark);
         }
         super.onCreate(savedInstanceState);
+        Fabric.with(new Fabric.Builder(this)
+                            .kits(new Crashlytics())
+                            .debuggable(true)
+                            .build());
+
         setContentView(R.layout.activity_main);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
